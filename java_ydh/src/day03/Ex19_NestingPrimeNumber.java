@@ -7,15 +7,14 @@ public class Ex19_NestingPrimeNumber {
 		int n=4;
 		int c=0;
 		for(int i=1;i<=100;i++) {
-			c=0;
 			for(int j=2;j<=100;j++) {
 				if(j%i==0) {
-					c++;
 				}
 			}
 			if(c==2) {
 				System.out.println(c+", ");
 			}
+			c++;
 		}
 
 	}

@@ -51,7 +51,7 @@ public class Ex06_AccountBook {
 				break;
 			case '2':
 				System.out.println("2.가계부 수정");
-				for(int j=0;j<c;j++) {
+				for(int j=1;j<=c;j++) {
 					list[j-1].print(j);
 				}
 				System.out.println("금엑을 수정할 번호를 선택하세요.");

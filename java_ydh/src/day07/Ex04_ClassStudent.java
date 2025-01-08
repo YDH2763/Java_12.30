@@ -160,7 +160,7 @@ num[j-1]+"번 "+name[j-1]+" "+subject[j-1]+" : "+score[j-1]);
 
 }
 
-class Student {
+class Student1 {
 	
 	String[] name;
 	String[] subject;
@@ -174,7 +174,7 @@ class Student {
 	num+"번"+name+""+subject+":"+score);
 	}
 	
-	public Student(int[] grade, int[] classnum, int[] num, String[] name, String[] subject,
+	public Student1(int[] grade, int[] classnum, int[] num, String[] name, String[] subject,
 			int[] score) {
 		this.grade=grade;
 		this.classnum=classnum;

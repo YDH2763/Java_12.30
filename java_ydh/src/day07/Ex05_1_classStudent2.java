@@ -1,6 +1,6 @@
 package day07;
 import java.util.Scanner;
-public class Ex04_1_classStudent {
+public class Ex05_1_classStudent2 {
 	
 	static Scanner number =new Scanner(System.in);
 	public static void main(String[] args) {
@@ -95,44 +95,3 @@ public class Ex04_1_classStudent {
 
 }
 
-class Student{	//만약 클래스 에러가 뜨면 같은 패키지 안에 같은 클래스.이름이 있다는것을 말함.
-	int grade, classNum, num;	//학년, 반, 번호
-	String name;				//이름
-	String subject;				//과목
-	int score;					//점수
-	
-	public void print() {
-		System.out.println(grade + "학년 " + classNum + "반 " + 
-				num + "번 " + name + " " + subject + " : " + score);
-	}	//배열에 입력된 값을 출력
-	
-	public boolean equal(int grade, int classNum, int num, String subject) {
-		if(this.grade!=grade) {
-			return false;
-		}
-		if(this.classNum!=classNum) {
-			return false;
-		}
-		if(this.num!=num) {
-			return false;
-		}
-		if(!this.subject.equals(subject)) {
-			return false;
-		}
-		return true;
-	}
-	public void setScore(int score) {
-		this.score=score;	//점수(매개변수) 수정
-	}
-	
-	public Student(int grade, int classNum, int num, String name, String subject, int score) {
-		this.grade = grade;
-		this.classNum = classNum;
-		this.num = num;
-		this.name = name;
-		this.subject = subject;
-		this.score = score;
-	}	//매개변수 선언
-	
-	
-}

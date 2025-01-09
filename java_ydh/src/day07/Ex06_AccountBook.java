@@ -50,25 +50,45 @@ public class Ex06_AccountBook {
 				c++;
 				break;
 			case '2':
-				System.out.println("2.가계부 수정");
-				for(int j=1;j<=c;j++) {
-					list[j-1].print(j);
+				if(c==0) {
+					System.out.println("등록된 내역이 없습니다.");
+					break;
 				}
-				System.out.println("금엑을 수정할 번호를 선택하세요.");
-				int list1=number.nextInt();
-				for(int j=1;j<=c;j++) {
-					if(list1==j) {
-						System.out.println("수정할 금엑을 입력하세요.");
-						int list2=number.nextInt();
-						list[j-1].money=list2;
+				else {
+					System.out.println("2.가계부 수정");
+					for(int j=1;j<=c;j++) {
+						list[j-1].print(j);
 					}
+					System.out.println("금엑을 수정할 번호를 선택하세요.");
+					int list1=number.nextInt();
+					for(int j=1;j<=c;j++) {
+						if(list1==j) {
+							System.out.println("수정할 금엑을 입력하세요.");
+							int list2=number.nextInt();
+							list[j-1].money=list2;
+							System.out.println("수정되었습니다.");
+						}
+					}
+					break;
 				}
-				break;
 			case '3':
+				if(c==0) {
+					System.out.println("등록된 내역이 없습니다.");
+					break;
+				}
 				System.out.println("3.가계부 삭제");
-				
+				System.out.println("삭제할 번호를 선택하세요.");
+				int list3=number.nextInt()-1;
+				for(int j=list3+1;j<c;j++) {
+					list[j-1]=list[j];
+				}
+				c--;
 				break;
 			case '4':
+				if(c==0) {
+					System.out.println("등록된 내역이 없습니다.");
+					break;
+				}
 				//반복문을 이용하여 저장된 내역들을 숫자와 함께 출력.
 				System.out.println("4.가계부 조회");
 				System.out.println("다음 조회할 번호를 입력하세요.");

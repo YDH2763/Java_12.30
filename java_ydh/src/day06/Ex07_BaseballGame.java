@@ -123,7 +123,7 @@ public class Ex07_BaseballGame {
 		}
 		return s;
 	}
-	public static int [] creatRandomArray(int n1, int n2, int n3) {
+	public static int [] creatRandomArray(int n1, int n2, int[] n3) {
 		if(n2<n1) {
 			int t =n2;
 			n2=n1;

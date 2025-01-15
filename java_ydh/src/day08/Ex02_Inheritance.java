@@ -1,4 +1,5 @@
 package day08;
+import day08.ex2.KiaCar;
 import lombok.Data;
 public class Ex02_Inheritance {
 

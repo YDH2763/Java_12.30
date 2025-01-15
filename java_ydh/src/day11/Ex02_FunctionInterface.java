@@ -33,7 +33,9 @@ public class Ex02_FunctionInterface {
 				System.out.println(person);
 			}
 		}
+	
 	}
+	
 }
 
 @Data

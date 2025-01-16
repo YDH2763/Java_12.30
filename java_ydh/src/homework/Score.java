@@ -10,7 +10,8 @@ public class Score {
 	private String sub;
 	private int score;
 	
-	public void newScore(String newsub, int newscore){
+	public void newScore(String newname,String newsub, int newscore){
+		this.name=newname;
 		this.sub=newsub;
 		this.score=newscore;
 	}
@@ -19,6 +20,5 @@ public class Score {
 	public String toString() {
 		return name+"의 "+sub+"점수는 "+score+"점 입니다.";
 	}
-	
 
 }

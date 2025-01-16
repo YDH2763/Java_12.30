@@ -10,10 +10,12 @@ public class Subject {
 
 	@Override
 	public String toString() {
-		return subject+", ";
+		return subject;
 	}
 	public void newSubject(String newsubject){
 		this.subject=newsubject;
 	}
-	
+	public void update(String subject) {
+		this.subject=subject;
+	}
 }

@@ -12,8 +12,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Ex09_ObjectStream2 {
 	/* 다음 기능을 갖는 프로그램을 작성하세요.
@@ -35,14 +37,14 @@ public class Ex09_ObjectStream2 {
 	
 	public static void main(String[] args) {
 		
-		finethelist();
-		
+		load(fileName,list);
+		final char Exit='3';
 		for(int i=0;;i++) {
 			mainMenu();
 			char s=number.next().charAt(0);
 			number.nextLine();
 			startMenu(s);
-			if(s=='3') {
+			if(s==Exit) {
 				break;
 			}
 			
@@ -52,23 +54,40 @@ public class Ex09_ObjectStream2 {
 
 	}
 
-	private static void finethelist() {
-		try(FileInputStream fis=new FileInputStream(fileName);
+	private static void load(String fileName, ArrayList<Car> list) {
+		try(FileInputStream fis = new FileInputStream(fileName);
 				ObjectInputStream ois = new ObjectInputStream(fis)){
-					Car car=(Car)ois.readObject();
-					System.out.println(list);
-					
-					} catch (FileNotFoundException e) {
-						System.out.println("파일을 찾을 수 없습니다.");
-						e.printStackTrace();
-					} catch (IOException e) {
-						System.out.println("IO 예외 발생");
-						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
-						System.out.println("클래스를 찾을 수 없습니다.");
-						e.printStackTrace();
-					}
+				
+			 ArrayList<Car> temp=(ArrayList<Car>) ois.readObject();
+			 list.addAll(temp);
+				
+			} catch (FileNotFoundException e) {
+				System.out.println("파일을 찾을 수 없습니다.");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("IO 예외 발생!");
+			} catch (ClassNotFoundException e) {
+				System.out.println("클래스를 찾을 수 없습니다.");
+				e.printStackTrace();
+			}
 	}
+
+	private static void save(String fileName, ArrayList<Car> list) {
+		try(FileOutputStream fos = new FileOutputStream(fileName);
+			ObjectOutputStream oos = new ObjectOutputStream(fos)){
+			
+			oos.writeObject(list);
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("파일을 찾을 수 없습니다.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IO 예외 발생!");
+		}
+		
+	}
+
+
 
 	private static void mainMenu() {
 		System.out.println("메뉴");
@@ -107,9 +126,10 @@ public class Ex09_ObjectStream2 {
 			System.out.println("이미 등록된 차량입니다.");
 			return;
 		}
+		//객체 생성과 추가
 		Car car= new Car(name,brand);
 		list.add(car);
-		/*try(FileOutputStream fos = new FileOutputStream(fileName);
+		try(FileOutputStream fos = new FileOutputStream(fileName);
 			ObjectOutputStream oos = new ObjectOutputStream(fos)){
 				oos.writeObject(list);
 			} catch (FileNotFoundException e) {
@@ -118,53 +138,41 @@ public class Ex09_ObjectStream2 {
 			} catch (IOException e) {
 				System.out.println("IO 예외 발생");
 				e.printStackTrace();
-			}*/
+			}
 		
 		System.out.println("차량을 등록하였습니다.");
 		return;
 	}
 
 	private static void searchCar() {
-		System.out.println(list);
-		/*try(FileInputStream fis=new FileInputStream(fileName);
-				ObjectInputStream ois = new ObjectInputStream(fis)){
-					Car car=(Car)ois.readObject();
-					System.out.println(list);
-					
-					} catch (FileNotFoundException e) {
-						System.out.println("파일을 찾을 수 없습니다.");
-						e.printStackTrace();
-					} catch (IOException e) {
-						System.out.println("IO 예외 발생");
-						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
-						System.out.println("클래스를 찾을 수 없습니다.");
-						e.printStackTrace();
-					}*/
+		list.sort((o1,o2)->{
+			//브랜드를 비교하여 다르면 사전순으로 정렬
+			if(o1.getBrand().equals(o2.getBrand())) {
+				return o1.getBrand().compareTo(o2.getBrand());
+			}
+				//이름을 사전순으로 정렬
+				return o1.getName().compareTo(o2.getName());
+		});
+		
+		for(Car car:list) {
+			System.out.println(car);
+		}
 	}
 	
 	private static void downProgram() {
 		
 		System.out.println("프로그램을 종료합니다.");
-		try(FileInputStream fis=new FileInputStream("src/day12/car_list.txt")){
-			
-			int data;
-			do {
-				data=fis.read();
-			}while(data!=-1);
-		}catch(FileNotFoundException e) {
-			System.out.println("파일을 찾을 수 없습니다.");
-		}
-		catch(IOException e) {
-			System.out.println("IO 예외 발생");
-		}
+		save(fileName,list);
 		return;
 	}
 
 }
 @Data
 @AllArgsConstructor
-class Car{
+class Car implements Serializable{
+	
+	private static final long serialVersionUID = 0;
+	
 	private String name;
 	private String brand;
 	
@@ -173,8 +181,5 @@ class Car{
 		return "이름 : "+name+"\r\n"+"회사이름 : "+brand+"\r\n";
 	}
 
-	public Car() {
-		// TODO Auto-generated constructor stub
-	}
 	
 }

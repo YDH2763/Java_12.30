@@ -1,4 +1,4 @@
-package homework;
+package homework2;
 import java.util.List;
 
 import lombok.AllArgsConstructor;

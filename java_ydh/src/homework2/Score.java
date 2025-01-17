@@ -1,4 +1,4 @@
-package homework;
+package homework2;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,8 +6,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Score {
-	private String  name;
-	private String  sub;
+	private String name;
+	private String sub;
 	//private Subject subject;
 	private int score;
 	

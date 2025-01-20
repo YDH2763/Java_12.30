@@ -1,11 +1,14 @@
 package homework;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class Score {
+public class Score implements Serializable{
+	private static final long serialVersionUID=0;
 	private String  name;
 	private String  sub;
 	//private Subject subject;

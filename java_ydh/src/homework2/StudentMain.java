@@ -136,10 +136,10 @@ public class StudentMain {
 
 	private static void scanStudent(Student std) {
 		Stream<Student> stream =stulist.stream();
-		if(stulist.indexOf(std).equals()) {
+		/*if(stulist.indexOf(std).equals()) {
 			System.out.println("이미 등록되어있는 학생입니다.");
 			return;
-		}
+		}*/
 		System.out.println("입력되었습니다.");
 		return;
 		

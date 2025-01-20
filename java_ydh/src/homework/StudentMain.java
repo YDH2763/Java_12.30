@@ -49,10 +49,22 @@ public class StudentMain {
 		 * */
 		
 		//불러오기
-		stuload(studentfileName,stulist);
-		subload(subectfileName,sublist);
-		scoload(scorefileName,scolist);
 		
+		stuload(studentfileName,stulist);
+		 if(stulist ==null) {
+			 stulist=new ArrayList<Student>();
+		 }
+		 
+		subload(subectfileName,sublist);
+		if(sublist ==null) {
+			 sublist=new ArrayList<Subject>();
+		 }
+		
+		scoload(scorefileName,scolist);
+		 if(scolist ==null) {
+			 scolist=new ArrayList<Score>();
+		 }
+		 
 		int s=0;
 		final int Exit=13;
 		for(int i=0;;i++) {
@@ -84,6 +96,7 @@ public class StudentMain {
 			} catch (Exception e) {
 				System.out.println("[저장하기 실패]");
 			}
+		return;
 	}
 
 	private static void subsave(String subectfileName, ArrayList<Subject> sublist) {
@@ -95,6 +108,7 @@ public class StudentMain {
 			} catch (Exception e) {
 				System.out.println("[저장하기 실패]");
 			}
+		return;
 		
 	}
 
@@ -107,45 +121,52 @@ public class StudentMain {
 			} catch (Exception e) {
 				System.out.println("[저장하기 실패]");
 			}
+		return;
 		
 	}
 
-	private static void scoload(String scorefileName, ArrayList<Score> scolist) {
+	private static Object scoload(String scorefileName, ArrayList<Score> scolist) {
 		try(FileInputStream fis = new FileInputStream(scorefileName);
 				ObjectInputStream ois = new ObjectInputStream(fis)){
 				
 			 ArrayList<Score> temp=(ArrayList<Score>) ois.readObject();
 			 scolist.addAll(temp);
+			 
 				
 			} catch (Exception e) {
 				System.out.println("[불러오기 실패]");
 			}
+		return scolist;
 		
 	}
 
-	private static void subload(String subectfileName, ArrayList<Subject> sublist) {
+	private static Object subload(String subectfileName, ArrayList<Subject> sublist) {
 		try(FileInputStream fis = new FileInputStream(subectfileName);
-				ObjectInputStream ois = new ObjectInputStream(fis)){
-				
+			ObjectInputStream ois = new ObjectInputStream(fis)){
+			
 			 ArrayList<Subject> temp=(ArrayList<Subject>) ois.readObject();
 			 sublist.addAll(temp);
+			 
 				
 			} catch (Exception e) {
 				System.out.println("[불러오기 실패]");
 			}
+		return sublist;
 		
 	}
 
-	private static void stuload(String studentfileName, ArrayList<Student> stulist) {
+	private static Object stuload(String studentfileName, ArrayList<Student> stulist) {
 		try(FileInputStream fis = new FileInputStream(studentfileName);
-				ObjectInputStream ois = new ObjectInputStream(fis)){
+			ObjectInputStream ois = new ObjectInputStream(fis)){
 				
+			 
 			 ArrayList<Student> temp=(ArrayList<Student>) ois.readObject();
 			 stulist.addAll(temp);
-				
+			 
 			} catch (Exception e) {
 				System.out.println("[불러오기 실패]");
 			}
+		return stulist;
 		
 	}
 
@@ -205,32 +226,44 @@ public class StudentMain {
 		//학년, 반, 번호, 이름 입력
 		//주의: 학생 추가시 성적 리스트를 생성
 		System.out.println("1.학생 등록");
-		System.out.println("학생의 이름을 입력하세요.");
+		Student std =insertStudent();
+		//입력받은 학년, 반, 번호, 이름을 이용하여 객체 생성=>리스트에 있는 기능을 활용하기 위해
+		//생성한 객체가 리스트에 있는지 확인하여 있으면 종료=>student클래스의 equals를 오버라이딩
+		//리스트.indexOf(객체2)=>Object.equals(객체1,객체2)=>객체1.equals(객체2)
+		//없으면 리스트에 추가후 안내 문구
+		scanStudent(std);
+	
+	}
+
+
+	private static Student insertStudent() {
+		Student temp = inputBaseStudent();
+		
+		removeBuffer();
+		System.out.println("이름을 입력하세요.");
 		String name=number.next();
+		
+		temp.setName(name);
+		return temp;
+	}
+
+	private static Student inputBaseStudent() {
 		System.out.println("학생의 학년을 입력하세요.");
 		int grade=number.nextInt();
 		System.out.println("학생의 반을 입력하세요.");
 		int classNum=number.nextInt();
 		System.out.println("학생의 번호을 입력하세요.");
 		int num=number.nextInt();
-		//입력받은 학년, 반, 번호, 이름을 이용하여 객체 생성=>리스트에 있는 기능을 활용하기 위해
-		//생성한 객체가 리스트에 있는지 확인하여 있으면 종료=>student클래스의 equals를 오버라이딩
-		//리스트.indexOf(객체2)=>Object.equals(객체1,객체2)=>객체1.equals(객체2)
-		//없으면 리스트에 추가후 안내 문구
-		scanStudent(name,grade,classNum,num);
 		
-	
+		return new Student(grade,classNum,"",num);
+		
 	}
 
-
-	private static void scanStudent(String name, int grade, int classNum, int num) {
-		for(Student student:stulist) {
-			if(student.getGrade()==(grade) &&student.getClassNum()==(classNum)&&student.getNum()==(num) ) {
-				System.out.println("이미 등록된 학생입니다.");
-				return;
-			}
+	private static void scanStudent(Student std) {
+		if(stulist.contains(std)) {
+			System.out.println("이미 등록된 학생입니다.");
+			return;
 		}
-		Student std= new Student(grade, classNum, name, num);
 		stulist.add(std);
 		System.out.println("입력되었습니다.");
 		return;
@@ -238,47 +271,33 @@ public class StudentMain {
 
 	private static void renameStudent() {
 		System.out.println("2.학생 수정");
-		//학년, 반, 번호 입력
-
-		System.out.println("수정할 학생의 학년을 입력하세요.");
-		int grade=number.nextInt();
-		System.out.println("수정할 학생의 반을 입력하세요.");
-		int classNum=number.nextInt();
-		System.out.println("수정할 학생의 번을 입력하세요.");
-		int num=number.nextInt();
-		//입력한 학생 정보를 객체 생성
-		ArrayList<Student>templist=searchStudentlist(grade,classNum,num);
-		for(int i=0;i<templist.size();i++) {
-			System.out.println((i+1)+"."+templist.get(i));
-		}
-		//생성한 객체가 리스트에 있으면 번지를 가져옴
-		System.out.println("다음 학생을 수정하실거면 1을 입력하세요.");
-		int index = number.nextInt()-1;
-		number.nextLine();
-		//번지가 음수이면 안내문구를 출력후 종료
-		if(index!=0) {
-			System.out.println("메인 화면으로 돌아갑니다.");
+		
+		Student std = inputBaseStudent();
+		
+		int index =stulist.indexOf(std);
+		
+		if(index <0) {
+			System.out.println("일치하는 학생이 없습니다.");
 			return;
 		}
-		//입력받은 정보로 객체를 생성
-		Student std =templist.get(index);
-		//아니면 수정할 학년, 반, 번호, 이름을 입력
-		System.out.println("학생의 이름을 입력하세요.");
-		String newname=number.next();
-		System.out.println("학생의 학년을 입력하세요.");
-		int newgrade=number.nextInt();
-		System.out.println("학생의 반을 입력하세요.");
-		int newclassNum=number.nextInt();
-		System.out.println("학생의 번호을 입력하세요.");
-		int newnum=number.nextInt();
+		System.out.println("수정할 학생의 정보를 입력하세요.");
+		Student newstd =insertStudent();
+		
+		Student oldstd =stulist.remove(index);
 		//번지에 있는 객체를 위에서 생성한 객체로 변경
-		std.update(newgrade, newclassNum, newnum, newname);
-		System.out.println("다음 학생의 정보가 수정되었습니다.");
-		return;
+		if(stulist.contains(newstd)) {
+			System.out.println("이미 등록된 학생입니다.");
+			stulist.add(index,oldstd);
+			return;
+		}
+		stulist.add(index,oldstd);
+		
+		stulist.get(index).update(newstd);
+		System.out.println("학생을 수정했습니다.");
 		
 	}
 
-	private static ArrayList<Student> searchStudentlist(int grade, int classNum, int num) {
+	/*private static ArrayList<Student> searchStudentlist(int grade, int classNum, int num) {
 		ArrayList<Student>templist=new ArrayList<Student>();
 		for(Student std:stulist) {
 				if(std.getGrade()==(grade)) {
@@ -291,39 +310,25 @@ public class StudentMain {
 			
 		}
 		return templist;
-	}
+	}*/
 
 	private static void deleteStudent() {
 		//학년, 반, 번호, 입력
 		System.out.println("3.학생 삭제");
-		System.out.println("삭제할 학생의 학년을 입력하세요.");
-		int grade=number.nextInt();
-		System.out.println("삭제할 학생의 반을 입력하세요.");
-		int classNum=number.nextInt();
-		System.out.println("삭제할 학생의 번을 입력하세요.");
-		int num=number.nextInt();
+		Student std=inputBaseStudent();
 		//입력받은 정보를 객체 생성
-		ArrayList<Student> templist=searchStudentlist(grade,classNum,num);
-		for(int j=0;j<templist.size();j++) {
-			System.out.println((j+1)+"."+templist.get(j));
-		}
-		//실패하면 실패 알림문구 출력
-		if(printStudentNumberlist(templist,true)) {
-			return;
-		}
-		System.out.println("다음 학생중 삭제할 학생의 번호를 입력하세요.");
-		int index=number.nextInt()-1;
-		number.nextLine();
 		//생성한 객체를 이용하여 리스트에서 삭제
 		//삭제에 성공하면 성공 알림 문구
-		Student std =templist.get(index);
-		stulist.remove(std);
-		System.out.println("삭제하였습니다.");
+		if(stulist.remove(std)) {
+			System.out.println("학생을 삭제했습니다.");
+			return;
+		}
+		//실패하면 실패 알림문구 출력
+		System.out.println("일치하는 학생이 없습니다.");
 		
-		return;
 	}
 
-	private static boolean printStudentNumberlist(ArrayList<Student> templist, boolean b) {
+	/*private static boolean printStudentNumberlist(ArrayList<Student> templist, boolean b) {
 		if(templist==null||templist.size()==0) {
 			System.out.println("아직 등록되지 않았습니다.");
 			return false;
@@ -335,114 +340,80 @@ public class StudentMain {
 			System.out.println(templist.get(j));
 		}
 		return true;
-	}
+	}*/
 
 	
 
 	private static void inputSubject() {
 		//학년, 학기, 과목명을 입력
 		System.out.println("4.과목 등록");
-		//학년
+		Subject subject=insertSubject();
+		//이미 등록된 과목이면 알림 후 종료=>Subject 클래스의 equals를 오버라이딩
+		scanSubject(subject);
+		//과목을 추가 후 알림
+		sublist.add(subject);
+		System.out.println("과목을 등록하였습니다.");
+		System.out.println(sublist);
+		return;
+		
+	}
+
+	private static Subject insertSubject() {
 		System.out.println("학년을 입력하세요.(3학년 이하로 입력)");
 		int grade=number.nextInt();
 		if(grade>3) {
 			System.out.println("잘못 입력하였습니다.");
-			return;
+			return null;
 		}
 		//학기
 		System.out.println("학기를 입력하세요.(2학기 이하)");
 		int term=number.nextInt();
 		if(term>2) {
 			System.out.println("잘못 입력하였습니다.");
-			return;
+			return null;
 		}
-		//과목
+		removeBuffer();
 		System.out.println("과목을 입력하세요.");
 		String subject=number.next();
-		//이미 등록된 과목이면 알림 후 종료=>Subject 클래스의 equals를 오버라이딩
-		if(scanSubject(grade,term,subject)) {
-			return;
-		}
-		scanSubject(grade,term,subject);
-		//과목을 추가 후 알림
-		Subject sub = new Subject(grade,term,subject);
-		sublist.add(sub);
-		System.out.println("입력되었습니다.");
-		return;
-		
+		return new Subject(grade, term, subject);
 	}
 
-	private static boolean scanSubject(int grade, int term, String subject) {
-		for(Subject subject1:sublist) {
-			if(subject1.getGrade()==grade && subject1.getTerm()==term && subject1.getSubject().equals(subject)) {
+	private static boolean scanSubject(Subject subject) {
+			if(stulist.contains(subject)) {
 				System.out.println("이미 존재하는 과목 입니다.");
-				return true;
+				return false;
 			}
-		}
-		return false;
-		
+		return true;
 	}
 
 	private static void renameSubject() {
 		//학년, 학기, 과목명을 입력
 		System.out.println("5.과목 수정");
-		System.out.println("학년을 입력하세요.(3학년 이하로 입력)");
-		int grade=number.nextInt();
-		if(grade>3) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		System.out.println("학기를 입력하세요.(2학기 이하)");
-		int term=number.nextInt();
-		if(term>2) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		System.out.println("수정할 과목을 입력하세요.");
-		String subject=number.next();
+		Subject subject =insertSubject();
 		//등록된 과목이 아니면 알림 후 종료=>indexOf로 번지를 가져와서 사용
-		if(scanRenamesubject(grade,term,subject)) {
+		int index =sublist.indexOf(subject);
+		if(index < 0) {
+			System.out.println("일치하는 과목이 없습니다.");
 			return;
-		}
-		ArrayList<Subject>templist=searchSubjectlist(subject);
-		for(int i=0;i<templist.size();i++) {
-			System.out.println((i+1)+"."+templist.get(i));
 		}
 		//새 과목 정보를 입력(학년, 학기, 과목)
-		System.out.println("다음 과목중 수정할 번호를 고르세요.");
-		int index = number.nextInt()-1;
-		number.nextLine();
-		Subject sub =templist.get(index);
-		System.out.println("학년을 수정하세요.(3학년 이하로 입력)");
-		int newgrade=number.nextInt();
-		if(grade>3) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		//학기
-		System.out.println("학기를 수정하세요.(2학기 이하)");
-		int newterm=number.nextInt();
-		if(term>2) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		System.out.println("과목을 수정하세요.");
-		String newsubject=number.next();
+		System.out.println("수정할 과목 정보를 입력하세요.");
+		Subject newSubject =insertSubject();
 		
 		//등록된 과목이면 알림 후 종료
 			//리스트에서 index 번지에 있는 값을 제거 후 제거된 객체를 저장
-		if(scanSubject(newgrade,newterm,newsubject)) {
+		if(sublist.contains(newSubject)) {
+			System.out.println("이미 등록된 과목입니다.");
 			return;
 		}
 			//제거된 리스트에 새 과목정보와 일치하는 과목이 있으면 제거된 객체를 다시 저장
 		
 		//아니면 수정
-			//새 객체를 다시 추가
-		sub.update(newgrade,newterm,newsubject);
+		sublist.set(index, newSubject);
 		System.out.println("과목이 수정되었습니다.");
 	}
 
-	private static boolean scanRenamesubject(int grade, int term, String subject) {
+	/*private static boolean scanRenamesubject(int grade, int term, String subject) {
 		for(Subject subject1:sublist) {
 			if(subject1.getGrade()!=grade || subject1.getTerm()!=term || !subject1.getSubject().equals(subject)) {
 				System.out.println("과목을 잘못 입력했습니다.");
@@ -450,9 +421,9 @@ public class StudentMain {
 			}
 		}
 		return false;
-	}
+	}*/
 
-	private static ArrayList<Subject> searchSubjectlist(String subject) {
+	/*private static ArrayList<Subject> searchSubjectlist(String subject) {
 		ArrayList<Subject>templist=new ArrayList<Subject>();
 		for(Subject sub:sublist) {
 			if(sub.getSubject().contains(subject)) {
@@ -460,80 +431,36 @@ public class StudentMain {
 			}
 		}
 		return templist;
-	}
+	}*/
 
 	private static void deleteSubject() {
 		//학년, 학기, 과목명을 입력
 		System.out.println("6.과목 삭제");
-		System.out.println("학년을 입력하세요.(3학년 이하로 입력)");
-		int grade=number.nextInt();
-		if(grade>3) {
-			System.out.println("잘못 입력하였습니다.");
+		Subject subject =insertSubject();
+
+		if(sublist.remove(subject)) {
+			System.out.println("과목을 삭제했습니다.");
 			return;
 		}
-		System.out.println("학기를 입력하세요.(2학기 이하)");
-		int term=number.nextInt();
-		if(term>2) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		System.out.println("삭제할 과목을 입력하세요.");
-		String subject=number.next();
-		//입력한 정보로 객체를 생성
-		ArrayList<Subject>templist=searchSubjectlist(subject);
-		for(int i=0;i<templist.size();i++) {
-			System.out.println((i+1)+"."+templist.get(i));
-		}
-		//리스트에서 생성한 객체를 제거해서 성공하면 성공 알림 그리고 실패하면 실패 알림
-		System.out.println("다음 과목중 삭제할 번호를 고르세요.");
-		int index = number.nextInt()-1;
-		number.nextLine();
-		Subject sub =templist.get(index);
-		sublist.remove(sub);
-		System.out.println("삭제되었습니다.");
+		System.out.println("일치하는 과목이 없습니다.");
 		return;
 	}
 
 	private static void inputScore() {
 		System.out.println("7.점수 등록");
+		System.out.println("학생의 정보를 입력하세요.");
 		//학년, 반, 번호를 입력
-		System.out.println("학생의 이름을 입력하세요.");
-		String name=number.next();
-		System.out.println("학생의 학년을 입력하세요.");
-		int grade=number.nextInt();
-		System.out.println("학생의 반을 입력하세요.");
-		int classNum=number.nextInt();
-		System.out.println("학생의 번호을 입력하세요.");
-		int num=number.nextInt();
+		Student std=inputBaseStudent();
 		//입력한 정보로 객체를 생성(Student)
-		ArrayList<Student>temp1=searchStudentlist(grade,classNum,num);
+		int index =stulist.indexOf(std);
 		//리스트에 있는지 확인해서 없으면 알림후 종료
-		for(Student templist1:stulist) {
-			if(templist1.getGrade()!=grade||templist1.getClassNum()!=classNum ||templist1.getNum()!=num) {
-				int di1=0;
-				Student ws =temp1.get(di1);
-				stulist.remove(ws);
-				System.out.println("잘못 입력하였습니다.");
-			}
+		if(index<0) {
+			System.out.println("일치하는 학생의 이름이 없습니다.");
+			return;
 		}
 		//학년, 학기, 과목을 입력
-		System.out.println("학기를 입력하세요.(2학기 이하)");
-		int term=number.nextInt();
-		if(term>2) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		//과목
 		System.out.println("과목을 입력하세요.");
-		String subject=number.next();
-		//입력한 정보로 객채를 생성(Subject)
-		ArrayList<Subject>temp2=searchSubjectlist(subject);
-		//과목 리스트에 등록된 과목인지 확인후 아니면 알림 후 종료
-		if(scanRenamesubject(grade,term,subject)) {
-			Subject di2= temp2.get(0);
-			sublist.remove(di2);
-			return;
-		}
+		Subject sub = insertSubject();
 		//성적을 입력해서 과목 정보와 성적을 이용하여 객체를 생성(Score)
 		System.out.println("점수를 입력하세요.");
 		int score=number.nextInt();
@@ -542,8 +469,7 @@ public class StudentMain {
 			System.out.println("점수의 범위는 '0'이상'100'이하 입니다.");
 			return;
 		}
-		Score sco =new Score(name,subject,score);
-		scolist.add(sco);
+		scanStudentScore(name,subject,score);
 		System.out.println("학생의 점수를 입력하였습니다.");
 		//학생을 선택하여 객체 저장 list.get(xx).update()=>temp.update()
 		
@@ -554,8 +480,24 @@ public class StudentMain {
 		//실패했으면 실패 알림
 	}
 
+	private static void scanStudentScore(String name, String subject, int score) {
+		for(Score scor: scolist) {
+			if(scor.getName().equals(name)&&scor.getSub().equals(subject) &&scor.getScore()==score) {
+				System.out.println("이미 등록된 학생 점수입니다.");
+				return;
+			}
+			else {
+				Score sco =new Score(name,subject,score);
+				scolist.add(sco);
+			}
+		}
+		
+	}
+
 	private static void renameScore() {
 		//학년, 반, 번호를 입력
+		System.out.println("학생의 이름을 입력하세요.");
+		String name=number.next();
 		System.out.println("학생의 학년을 입력하세요.");
 		int grade=number.nextInt();
 		System.out.println("학생의 반을 입력하세요.");
@@ -565,7 +507,14 @@ public class StudentMain {
 		//입력한 정보로 객체 생성(Student)
 		ArrayList<Student>temp1=searchStudentlist(grade,classNum,num);
 		//리스트에 있는지  확인해서 없으면 알림 후 종료=>indexOf
-		
+		if(!stulist.contains(temp1)) {
+			System.out.println("일치하는 학생이 없습니다.");
+			return;
+		}
+		if(!temp1.getName().equals(name)) {
+			System.out.println("일치하는 학생이 없습니다.");
+			return;
+		}
 		//학년, 학기, 과목을 입력
 		System.out.println("학기를 입력하세요.(2학기 이하)");
 		int term=number.nextInt();
@@ -578,7 +527,10 @@ public class StudentMain {
 		//입력한 정보로 객채를 생성(Subject)
 		ArrayList<Subject>temp2=searchSubjectlist(subject);
 		//과목 리스트에 등록된 과목인지 확인후 아니면 알림 후 종료
-		
+		if(!sublist.contains(temp2)) {
+			System.out.println("일치하는 과목이 없습니다.");
+			return;
+		}
 		//새 과목 정보를 입력(학년,학기,과목)을 입력
 		System.out.println("학년을 입력하세요.(3학년 이하로 입력)");
 		int newgrade=number.nextInt();
@@ -628,38 +580,42 @@ public class StudentMain {
 	private static void deleteScore() {
 		System.out.println("9.점수 삭제");
 		//학년, 반, 번호를 입력
-		System.out.println("시험을 본학생의 이름을 입력하세요.");
-		String name=number.next();
+		System.out.println("학생의 학년을 입력하세요.");
+		int grade=number.nextInt();
+		System.out.println("학생의 반을 입력하세요.");
+		int classNum=number.nextInt();
+		System.out.println("학생의 번호을 입력하세요.");
+		int num=number.nextInt();
 		//입력한 정보로 객체 생성(Student)
-		
+		ArrayList<Student>temp1=searchStudentlist(grade,classNum,num);
 		//리스트에 있는지  확인해서 없으면 알림 후 종료=>indexOf
-				
-		if(!scolist.contains(name)) {
+		if(!stulist.contains(temp1)) {
 			System.out.println("시험을 보지 않은 학생입니다.");
 			return;
 		}
-		ArrayList<Score>templist=searchScorelist(name);
-		for(int i=0;i<templist.size();i++) {
-			System.out.println((i+1)+"."+templist.get(i));
-		}
 		//학년, 반, 번호를 입력
-		
+		System.out.println("학기를 입력하세요.(2학기 이하)");
+		int term=number.nextInt();
+		if(term>2) {
+			System.out.println("잘못 입력하였습니다.");
+			return;
+		}
+		System.out.println("과목을 입력하세요.");
+		String subject=number.next();
 		//입력한 정보로 객채를 생성(Subject)
-		
+		ArrayList<Subject>temp2=searchSubjectlist(subject);
 		//과목 리스트에 등록된 과목인지 확인후 아니면 알림 후 종료
-				
-		//새 과목 정보를 입력(학년,학기,과목)을 입력
-				
-		//과목 리스트에 등록된 과목인지 확인후 아니면 알림 후 종료
-						
-		//실패하면 실패 알림
-		System.out.println("다음 학생 중 수정할 번호를 고르세요.");
+		if(!sublist.contains(temp2)) {
+			System.out.println("존재하는 과목이 아닙니다.");
+			return;
+		}
+		/*System.out.println("다음 학생 중 수정할 번호를 고르세요.");
 		int index = number.nextInt()-1;
 		number.nextLine();
 		Score sco =templist.get(index);
 		scolist.remove(sco);
 		System.out.println("삭제되었습니다.");
-		return;
+		return;*/
 		
 	}
 
@@ -733,7 +689,7 @@ public class StudentMain {
 		//과목 정보로 객체를 생성
 		
 		//리스트에서 학생을 선택
-		ArrayList<Score>templist=new ArrayList<Score>;
+		ArrayList<Score>templist=new ArrayList<Score>();
 		//선택한 학생에게 과목정보를 주면서 성적을 출력하고 요청
 		printScorelist(templist,false);
 		return;

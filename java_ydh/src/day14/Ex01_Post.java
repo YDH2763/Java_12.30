@@ -2,7 +2,7 @@ package day14;
 
 import java.util.Scanner;
 
-
+import day16.Post;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -231,13 +232,15 @@ public class Ex01_Post {
 
 @Data
 @AllArgsConstructor
-class Post{
+class Post implements Serializable{
+	
+	private static final long serialVersionUID = 7950467669298764591L;
 	
 	private static int count;
-	private int num;		//번호
-	private String title, content, writer;	//제목,내용,작성자
-	private Date date;		//작성일
-	private int view;		//조회수
+	private int num;
+	private String title, content, writer;
+	private Date date;
+	private int view;
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -245,45 +248,51 @@ class Post{
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != obj.getClass()) 
 			return false;
 		Post other = (Post) obj;
 		return num == other.num;
 	}
 
-	public void update(String newtitle, String name, String newcontent) {
-		this.title = newtitle;
-		this.content = newcontent;
-		this.writer = name;
+	public void view() {
+		view++;
 	}
 
 	public Post(String title, String content, String writer) {
-		
-		num= ++count;
+		num = ++count;
 		this.title = title;
 		this.content = content;
 		this.writer = writer;
-		date =new Date();
+		date = new Date();
 	}
 	
+	public Post(int num) {
+		this.num = num;
+	}
+
 	public void print() {
-		System.out.println("-----------------");
-		System.out.println("번호 : "+num);
-		System.out.println("제목 : "+title);
-		System.out.println("내용 : "+content);
-		System.out.println("작성자 : "+writer);
-		System.out.println("작성일 : "+getDateStr());
-		System.out.println("조회수 : "+view);
-		System.out.println("-----------------");
+		System.out.println("------------------------");
+		System.out.println("번호 : " + num);
+		System.out.println("제목 : " + title);
+		System.out.println("내용 : " + content);
+		System.out.println("작성자 : " + writer);
+		System.out.println("작성일 : " + getDateStr() );
+		System.out.println("조회수 : " + view);
+		System.out.println("------------------------");
 	}
 
 	private String getDateStr() {
-		// Date ->String
+		//Date -> String
 		//yyyy-MM-dd HH:mm:ss
-		SimpleDateFormat format =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat format = 
+			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return format.format(date);
 	}
 	
-	
-	
+	public static int getCount() {
+		return count;
+	}
+	public static void setCount(int count) {
+		Post.count = count;
+	}
 }

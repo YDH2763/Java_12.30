@@ -14,36 +14,52 @@ import java.util.List;
 public class Ex01_Server {
 	private static List<Post> postlist=new ArrayList<Post>();
 	public static void main(String[] args) {
-		String fileName="src/day16/postData.txt";
-		//postlist = (List<Post>) load(fileName);
-		if(postlist==null) {
-			postlist=new ArrayList<Post>();
-		}
+		
 		
 		int port = 1010;
-		
+		String fileName="src/day16/postData.txt";
+		String fileName2="src/day16/postCount.txt";
 		try {
+			
+			postlist = (List<Post>) load(fileName);
+			Integer count=(Integer) load(fileName2);
+			count =count==null?0:count;
+			Post.setCount(count);
+			if(postlist==null) {
+				postlist=new ArrayList<Post>();
+			}
+			else if (!postlist.isEmpty()){
+				//가장 마지막글 게시글 번호를 가져옴
+				Post.setCount(count);
+			}
+			
 			ServerSocket serverSocker =new ServerSocket(port);
 			
 			while(true) {
 				Socket socket = serverSocker.accept();
 				System.out.println("연결 성공!");
+				
 				ObjectOutputStream oos =new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream ois =new ObjectInputStream(socket.getInputStream());
 				
 				while(true) {
 					//메뉴를 입력 받음
 					int s=ois.readInt();
+					System.out.println(s);
 					//입력받은 메뉴에 맞는 기능을 실행
 					startMenu(s, oos,ois);
 					
 				}
 			}
 			
-		}catch(IOException e) {
-			e.printStackTrace();
-		}finally {
-			//save(fileName,postlist);
+		}catch(Exception e) {
+			System.out.println("연결 종료");
+			save(null,postlist);
+			save(fileName2,Post.getCount());
+			//e.printStackTrace();
+		}
+		finally {
+			
 		}
 	}
 
@@ -101,8 +117,12 @@ public class Ex01_Server {
 		//있으면 객체를 수정하고 true를 전송
 		
 		else {
-			postlist.get(index).setTitle(writer.getTitle());
-			postlist.get(index).setTitle(writer.getContent());
+			Post temp =(Post)postlist.get(index).clone();
+			
+			temp.setTitle(writer.getTitle());
+			temp.setContent(writer.getContent());
+			
+			postlist.set(index, temp);
 		}
 		oos.writeBoolean(resolt);
 		oos.flush();
@@ -130,7 +150,9 @@ public class Ex01_Server {
 	private static void searchPost(ObjectOutputStream oos, ObjectInputStream ois) {
 		try {
 			//전체 게시글을 클라이언트에게 전송
-			oos.writeObject(postlist);
+			List<Post> templist =new ArrayList<Post>();
+			templist.addAll(postlist);
+			oos.writeObject(templist);
 			oos.flush();
 			//게시글 번호를 입력
 			int num=ois.readInt();
@@ -139,8 +161,10 @@ public class Ex01_Server {
 			int index =postlist.indexOf(new Post(num));
 			Post post =null;
 			
-			if(index<0) {
+			if(index>=0) {
 				post=postlist.get(index);
+				post.view();
+				post=(Post)post.clone();
 			}
 			oos.writeObject(post);
 			oos.flush();

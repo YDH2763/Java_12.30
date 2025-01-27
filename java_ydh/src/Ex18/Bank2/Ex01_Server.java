@@ -27,7 +27,7 @@ public class Ex01_Server {
 		} 
 		
 		List<Account> list =new ArrayList<Account>();
-		String fileName="src/Ex18/Bank2/data.txt";
+		String fileName="src/Ex18.Bank2/data.txt";
 		list=(List<Account>) load(fileName);
 		if(list==null) {
 			list = new ArrayList<Account>();

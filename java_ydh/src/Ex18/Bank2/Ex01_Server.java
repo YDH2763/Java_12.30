@@ -1,10 +1,15 @@
 package Ex18.Bank2;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Ex01_Server {
 
@@ -22,7 +27,14 @@ public class Ex01_Server {
 		} 
 		
 		List<Account> list =new ArrayList<Account>();
+		String fileName="src/Ex18/Bank2/data.txt";
+		list=(List<Account>) load(fileName);
+		if(list==null) {
+			list = new ArrayList<Account>();
+		}
+		
 		while(true){
+			save(fileName,list);
 			//클라이언트와 연결
 			Socket socket ;
 			
@@ -32,6 +44,7 @@ public class Ex01_Server {
 			} catch (IOException e) {
 				System.out.println("[예외가 발생하여 클라이언트와 연결을 종료합니다.]");
 				e.printStackTrace();
+				continue;
 			}
 			
 			//서버를 실행
@@ -40,5 +53,31 @@ public class Ex01_Server {
 		}
 
 	}
+	
+	private static List<Account> load(String fileName) {
+		try(FileInputStream fis = new FileInputStream(fileName);
+				ObjectInputStream ois = new ObjectInputStream(fis)){
+				
+				return (List<Account>) ois.readObject();
+				
+			} catch (Exception e) {
+				System.out.println("-----------------");
+				System.out.println("불러오기 실패");
+				System.out.println("-----------------");
+			}
+			return null;
+	}
 
+	private static void save(String fileName, List<Account> postlist) {
+		try(FileOutputStream fos = new FileOutputStream(fileName);
+				ObjectOutputStream oos = new ObjectOutputStream(fos)){
+				
+				oos.writeObject(fileName);
+				
+			} catch (Exception e) {
+				System.out.println("-----------------");
+				System.out.println("저장하기 실패");
+				System.out.println("-----------------");
+			}
+	}
 }

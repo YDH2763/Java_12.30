@@ -63,10 +63,12 @@ public class Server {
 			open();
 			break;
 		case 2://입금
-			deposit();
+			//deposit();
+			depositAndWithdrawal(Type.입금);
 			break;
 		case 3://출금
-			withdrawal();
+			//withdrawal();
+			depositAndWithdrawal(Type.입금);
 			break;
 		case 4://조회
 			check();
@@ -116,17 +118,93 @@ public class Server {
 	}
 
 	private void deposit() {
-		// TODO Auto-generated method stub
-		
+		try {
+			// 계좌 정보와 예금을 클라이언트에게 전달 받음
+			long money=ois.readLong();
+			Account account=(Account)ois.readObject();
+			
+			long result =-1;
+			
+			int index =list.indexOf(account);
+			//계좌 정보가 있는지 확인, //계좌 정보가 있는지 확인
+			if(money<=0) {
+				
+				//클라이언트에게 결과를 전송
+				oos.writeLong(index);
+				oos.flush();
+				return;
+				
+			}
+			//계좌에 예금을 추가하여, 입출금 내역이 추가되도록 함.
+			Account temp= list.get(index);
+			synchronized(temp) {
+			result = temp.deposit(money) ? temp.getMoney() : -1;
+			
+			//클라이언트에게 결과를 전송
+			oos.writeLong(result);
+			oos.flush();
+			Thread.sleep(500);
+			}
+			
+			
+		}catch(Exception e) {
+			System.out.println("입금하는중에 예외가 발생했습니다.");
+			e.printStackTrace();
+		}
 	}
 
 	private void withdrawal() {
-		// TODO Auto-generated method stub
-		
+		try {
+			// 계좌 정보와 예금을 클라이언트에게 전달 받음
+			long money=ois.readLong();
+			Account account=(Account)ois.readObject();
+			
+			long result =-1;
+			
+			int index =list.indexOf(account);
+			//계좌 정보가 있는지 확인, //계좌 정보가 있는지 확인
+			if(money<=0) {
+				
+				//클라이언트에게 결과를 전송
+				oos.writeLong(index);
+				oos.flush();
+				return;
+				
+			}
+			//계좌에 출금을 추가하여, 입출금 내역이 추가되도록 함.
+			Account temp= list.get(index);
+			synchronized(temp) {
+			result = temp.withdrawal(money) ? temp.getMoney() : -1;
+			
+			//클라이언트에게 결과를 전송
+			oos.writeLong(result);
+			oos.flush();
+			Thread.sleep(500);
+			}
+			
+			
+		}catch(Exception e) {
+			System.out.println("출금하는중에 예외가 발생했습니다.");
+			e.printStackTrace();
+		}
 	}
 
 	private void check() {
-		// TODO Auto-generated method stub
+		try {
+		//계좌 정보를 클라이언트에게 받아옴
+		Account account =(Account)ois.readObject();
+		//받아온 계좌와 일치하는 계좌의 복사본을 생성해서 전송
+		int index=list.indexOf(account);
+		Account temp=null;
+		if(index>=0) {
+			temp=(Account)list.get(index).clone();
+		}
+		oos.writeObject(temp);
+		oos.flush();
+		}catch(Exception e) {
+			System.out.println("조회 중 예외가 발생했습니다.");
+			e.printStackTrace();
+		}
 		
 	}
 	

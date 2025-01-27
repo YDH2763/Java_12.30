@@ -13,6 +13,7 @@ public class ClientProgram {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private Socket socket;
+	private Type type;
 	
 	public ClientProgram(Socket socket) {
 		this.socket=socket;
@@ -84,7 +85,7 @@ public class ClientProgram {
 			oos.writeObject(account);
 			oos.flush();
 			
-			account2 =(Account)ois.readObject();
+			account2 = (Account)ois.readObject();
 			
 		} catch (IOException e) {
 			
@@ -142,11 +143,13 @@ public class ClientProgram {
 		switch(s) {
 		case 1:
 			System.out.println("1.입금");
-			deposit(account);
+			//deposit(account);
+			depositAndwithdrawal(type.입금, account);
 			break;
 		case 2:
 			System.out.println("2.출금");
-			withdrawal(account);
+			//withdrawal(account);
+			depositAndwithdrawal(type.출금, account);
 			break;
 		case 3:
 			System.out.println("3.조회");
@@ -161,16 +164,118 @@ public class ClientProgram {
 		}
 		
 	}
+	private void depositAndwithdrawal(Type type2, Account account) {
+		System.out.println("입출금할 금액을 입력하세요.");
+		long money =number.nextLong();
+		number.nextLine();
+		try {
+			int s=Type.입금==type? 2:3;
+			oos.writeInt(s);
+			oos.writeLong(money);
+			oos.writeObject(account);
+			oos.flush();
+			//결과를 입력받아 알림
+			long result=ois.readLong();
+			if(result>=0) {
+				System.out.println(type+"했습니다.");
+				System.out.println("잔액 : "+result+"원");
+			}
+			else {
+				System.out.println(type+"에 실패했습니다.");
+			}
+		}catch(Exception e) {
+			System.out.println(type+" 전송중 예외 발생");
+			e.printStackTrace();
+		}
+		
+	}
 	private void deposit(Account account) {
-		// TODO Auto-generated method stub
+		// 예금액을 입력
+		System.out.println("예금할 금액을 입력하세요.");
+		long money =number.nextLong();
+		number.nextLine();
+		
+		//예금의 예외 처리
+		if(money<=0) {
+			System.out.println("0원 보다 큰 금액을 예금하세요.");
+			return;
+		}
+		//메뉴, 예금액과 계정 정보를 서버에 전송
+		try {
+			oos.writeInt(2);
+			oos.writeLong(money);
+			oos.writeObject(account);
+			oos.flush();
+			//결과를 입력받아 알림
+			long result=ois.readLong();
+			if(result>=0) {
+				System.out.println("예금했습니다.");
+				System.out.println("잔액 : "+result+"원");
+			}
+			else {
+				System.out.println("예금에 실패했습니다.");
+			}
+		}catch(Exception e) {
+			System.out.println("예금 전송중 예외 발생");
+			e.printStackTrace();
+		}
 		
 	}
 	private void withdrawal(Account account) {
-		// TODO Auto-generated method stub
+		//출금액을 입력
+		System.out.println("출금할 금액을 입력하세요.");
+		long money =number.nextLong();
+		number.nextLine();
+				
+		//출금의 예외 처리
+		if(money<=0) {
+			System.out.println("0원 보다 큰 금액을 출금하세요.");
+			return;
+			}
+		//메뉴, 출금액과 계정 정보를 서버에 전송
+		try {
+			int s=3;
+			oos.writeInt(s);
+			oos.writeLong(money);
+			oos.writeObject(account);
+			oos.flush();
+			//결과를 입력받아 알림
+			long result=ois.readLong();
+			if(result>=0) {
+				System.out.println("출금했습니다.");
+				System.out.println("잔액 : "+result+"원");
+			}
+			else {
+				System.out.println("출금에 실패했습니다.");
+			}
+		}catch(Exception e) {
+			System.out.println("출금 전송중 예외 발생");
+			e.printStackTrace();
+		}
 		
 	}
 	private void check(Account account) {
-		// TODO Auto-generated method stub
+		try {
+		// 메뉴와 계좌 정보를 서버에 전송
+		int s=4;
+		oos.writeInt(s);
+		oos.writeObject(account);
+		oos.flush();
+		//계좌 정보를 받아옴
+		Account receiveaccount =(Account)ois.readObject();
+		
+		if(receiveaccount==null) {
+			//말이 안되는 상황
+			System.out.println("계좌 정보가 없습니다.");
+		}
+		else {
+			receiveaccount.print();
+		}
+		//계좌 정보를 출력
+		}catch(Exception e) {
+			System.out.println("조회 중예외가 발생했습니다.");
+			e.printStackTrace();
+		}
 		
 	}
 	private void open() {

@@ -23,10 +23,13 @@ public class Ex03_Student {
 	 * 4.종료
 	 * */
 	private static Scanner number=new Scanner(System.in);
-	private static List<Student> list=new ArrayList<Student>();
+	//여러날 출석 정보를 관리하는 출석부
+	private static List<StudentList> list=new ArrayList<StudentList>();
+	//학생 목록
+	private static List<String> students=new ArrayList<String>();
+	
 	public static void main(String[] args) {
 		
-		int c;
 		int s=0;
 		final int e=4;
 		for(int i=0;;i++) {
@@ -41,13 +44,13 @@ public class Ex03_Student {
 
 	}
 	private static void Attendence_And_Absence() {
-		System.out.println(list);
 		System.out.println("--학생 출석 관리--");
 		System.out.println("1.학생 등록");
 		System.out.println("2.출석 체크");
 		System.out.println("3.출석 확인");
 		System.out.println("4.프로그램 종료");
 		System.out.println("--------------");
+		System.out.print("메뉴 선택 : ");
 		
 	}
 	private static void startProgram(int s) {
@@ -76,31 +79,48 @@ public class Ex03_Student {
 	private static void insertStudent() {
 		System.out.print("학생 : ");
 		String student =number.next();
-		Student list =new Student(student,'x',"");
+		students.add(student);
+		System.out.println("학생을 등록하였습니다.");
 		
 	}
 	private static void checkAttendence() {
-		System.out.print("학생 : ");
+		/*System.out.print("학생 : ");
 		String student =number.next();
 		if(!list.contains(student)) {
 			System.out.println("이름을 잘못 입력하여 메인메뉴로 돌아갑니다.");
 			return;
-		}
+		}*/
 		System.out.print("날짜 : ");
 		String day=number.nextLine();
 		if(!dateCheck(day)) {
 			System.out.println("잘못 입력하여 메인 메뉴로 돌아갑니다.");
 			return;
 		}
-		System.out.print("출석여부(출석:'o'입력, 결석:'x'입력) : ");
-		char attendence=number.next().charAt(0);
-		if(attendence !='o'||attendence!='x') {
-			System.out.println("잘못 입력하여 메인 메뉴로 돌아갑니다.");
+		if(students.isEmpty()) {
+			System.out.println("등록된 학생들이 없습니다.");
 			return;
 		}
-		int index=list.indexOf(student);
-		list.remove(index);
-		Student list =new Student(student,attendence,day);
+		//학생 이름 출력후 출석 여부를 입력 받음
+		System.out.println("--------------------------------------");
+		System.out.println("출석여부(출석:'o'입력, 결석:'x'입력)");
+		System.out.println("--------------------------------------");
+		
+		List<Student> students1=new ArrayList<Student>();
+		
+		for(int i=0;i<students.size();i++) {
+			System.out.println((i+1)+". "+students.get(i)+" : ");
+			char check=number.next().charAt(0); 
+			if(check !='o'||check!='x') {
+				System.out.println("잘못 입력하여 메인 메뉴로 돌아갑니다.");
+				return;
+			}
+			Student student2=new Student(students.get(i),check);
+			students1.add(student2);
+		}
+		//출석리스트에 추가
+		list.add(new StudentList(day, students1));
+		
+		
 		
 	}
 	
@@ -122,36 +142,70 @@ public class Ex03_Student {
 		
 	}
 	private static void AttendenceAbsence() {
-		System.out.print("날짜 : ");
-		String day=number.nextLine();
-		if(!dateCheck(day)) {
-			System.out.println("잘못 입력하여 메인 메뉴로 돌아갑니다.");
+		if(!printDate()) {
 			return;
 		}
-		int index=list.indexOf(day);
-		for(Student s: list) {
-			
+		/*System.out.print("날짜 : ");
+		String day=number.nextLine();*/
+		System.out.print("조회하려는 날짜(정수) : ");
+		int index=number.nextInt()-1;
+		
+		if(index<0||index>=list.size()) {
+			System.out.println("입력을 잘못했습니다.");
+			return;
 		}
+		//출석부에서 날짜와 일치하는 출석리스트를 가져옴
+		StudentList studentlist =list.get(index);
+		studentlist.print();
+		/*if(!dateCheck(day)) {
+			System.out.println("잘못 입력하여 메인 메뉴로 돌아갑니다.");
+			return;
+		}*/
+		
+		
+	}
+	private static boolean printDate() {
+		if(list.isEmpty()) {
+			System.out.println("등록된 출석부가 없습니다.");
+			return false;
+		}
+		
+		for(int i=0;i<list.size();i++) {
+			System.out.println((i+1)+". "+list.get(i).getDate());
+		}
+		return true;
+		
 	}
 
 }
 
 @AllArgsConstructor
 @Data
-class Student{
-	private String student;
-	private char attendence;
-	private Date date;
+class StudentList{
+	private String date;
+	private List<Student> list;
 	
-	public Student(String student, char attendence, String date) {
-		this.student=student;
-		this.attendence=attendence;
+	public void print() {
+		System.out.println("출석일 : " +date);
+		for(Student student : list) {
+			System.out.println(student);
+		}
+		
 	}
-
+}
+@Data
+@AllArgsConstructor
+class Student{
+	private String name;
+	private char attendence;
+	
 	@Override
 	public String toString() {
-		return "학생 : "+student+" 날짜: "+date+" 출석 여부 : "+attendence;
+		return name+" : " + attendence;
 	}
+
+	
+
 	
 	
 	

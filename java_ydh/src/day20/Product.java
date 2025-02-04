@@ -70,6 +70,17 @@ public class Product {
 		this.code=prefix+suffix;
 		
 	}
+	
+	
+	public void update(String productName, String option, int price) {
+		this.productName=productName;
+		this.option=option;
+		this.price=price;
+	}
+	
+	public void updateStock(int amount) {
+		this.amount += amount;
+	}
 
 	
 	

@@ -192,74 +192,78 @@ public class Ex01_Client {
 	}
 
 	private static void updateProduct() {
+		//제품 코드를 입력
 		System.out.print("코드 : ");
 		String code=number.next();
-		Product temp=new Product(code,"","","",0,0);
-		if(!getCode(product, temp)) {
+		number.nextLine();
+		
+		//일치하는 제품이 없으면 알림 후 종료
+		int index=product.indexOf(new Product(code,"","","",0));
+		if(index<0) {	//문자열 주의!
 			System.out.println("등록된 제품이 아닙니다.");
 			return;
 		}
-		int index=product.indexOf(temp);
-		System.out.print("분류 : ");
-		String newcategory=number.next();
+		//수정할 정보를 입력(제품명, 옵션, 가격)
+		
+		/*System.out.print("분류 : ");
+		String newcategory=number.next();*/
+		
 		System.out.print("제품이름 : ");
 		String newname=number.next();
 		System.out.print("옵션 : ");
 		String newoption=number.next();
 		System.out.print("가격 : ");
 		int newprice=number.nextInt();
-		Product pro=new Product(code,newcategory,newname,newoption,newprice,0);
+		//수정 후 알림 출력
+		
+		/*Product pro=new Product(code,newcategory,newname,newoption,newprice,0);
 		product.remove(index);
-		product.add(pro);
+		product.add(pro);*/
+		
+		Product uppro=product.get(index);
+		product.update(newname,newoption,newprice);
 		System.out.println("수정 되었습니다.");
 		
 	}
 
-	private static boolean getCode(List<Product> product, Product temp) {
-		if(product==null||product.isEmpty()) {
-			return false;
-		}
-		if(temp==null) {
-			return false;
-		}
-		int index=product.indexOf(temp);
-		if(index<0) {
-			return false;
-		}
-		
-		return true;
-	}
+	
 
 	private static void deleteProduct() {
 		System.out.print("코드 : ");
 		String code=number.next();
-		Product temp=new Product(code,"","","",0,0);
-		if(!getCode(product, temp)) {
+		number.nextLine();
+		
+		//일치하는 제품이 없으면 알림 후 종료
+		int index=product.indexOf(new Product(code,"","","",0));
+		if(index<0) {	//문자열 주의!
 			System.out.println("등록된 제품이 아닙니다.");
 			return;
 		}
-		int index=product.indexOf(temp);
 		product.remove(index);
 		System.out.println("제품이 삭제되었습니다.");
 		
 	}
 
 	private static void stockProduct() {
+		//제품 코드 입력
 		System.out.print("코드 : ");
 		String code=number.next();
-		Product temp=new Product(code,"","","",0,0);
-		if(!getCode(product, temp)) {
+		number.nextLine();
+		
+		//일치하는 제품이 없으면 알림 후 종료
+		int index=product.indexOf(new Product(code,"","","",0));
+		if(index<0) {	//문자열 주의!
 			System.out.println("등록된 제품이 아닙니다.");
 			return;
 		}
-		
+		//제품 수량을 입력
 		System.out.println("입고된 갯수를 입력하세요.");
-		int stock=number.nextInt();
-		if(stock<0) {
-			System.out.println("잘못 입력하였습니다.");
-			return;
-		}
-		temp.setPrice(stock);
+		int amount=number.nextInt();
+		
+		//제품 수량을 변경 후 알림
+		Product uppro=product.get(index);
+		product.updateStock(amount);
+		System.out.println("다음 제품이 입고되었습니다.");
 		
 	}
 

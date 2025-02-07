@@ -27,7 +27,7 @@ public class Ex06_KeyEvent {
 	public static void documentListener() {
 		JFrame frame = new JFrame("키 입력 감지");
 		frame.setSize(500, 500);
-		frame.setDefaultCloseOPeration(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JTextField textField =new JTextField(50);
 		JLabel label =new JLabel("입력된 키 : ");
@@ -61,7 +61,7 @@ public class Ex06_KeyEvent {
 	public static void keyListener() {
 		JFrame frame = new JFrame("키 입력 감지");
 		frame.setSize(500, 500);
-		frame.setDefaultCloseOPeration(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JTextField textField =new JTextField(30);
 		JLabel label =new JLabel("입력된 키 : ");

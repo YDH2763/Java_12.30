@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>분할 예제2</title>
+	<style>
+		.main-box{border: 3px solid red; padding: 10px;}
+		.box{
+			height: 200px; width: calc( ( 100% - 10px ) / 2); float: left;
+			border: 3px solid blue; box-sizing: border-box; 
+		 }
+		 .box+.box{margin-left: 10px;}
+		.inner-main-box::after{ clear: both; content: ''; display: block;}
+	
+		 .main-box>:nth-child(2) .box{
+			width: calc( ( 100% - 2 * 10px ) / 3);
+		 }
+		 .inner-main-box+.inner-main-box{margin-top: 10px;}
+	</style>
+</head>
+<body>
+	<div class="main-box">
+		<div class="inner-main-box">
+			<div class="box">1</div>
+			<div class="box">2</div>
+		</div>
+		<div class="inner-main-box">
+			<div class="box">3</div>
+			<div class="box">4</div>
+			<div class="box">5</div>
+		</div>
+	</div>
+</body>
+</html>

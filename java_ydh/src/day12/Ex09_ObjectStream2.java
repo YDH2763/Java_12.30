@@ -122,12 +122,12 @@ public class Ex09_ObjectStream2 {
 		String name=number.next();
 		System.out.println("회사 이름을 입력하세요.");
 		String brand=number.next();
-		if(list.contains(brand) || list.contains(name)) {
+		//객체 생성과 추가
+		Car car= new Car(name,brand);
+		if(list.contains(car)) {
 			System.out.println("이미 등록된 차량입니다.");
 			return;
 		}
-		//객체 생성과 추가
-		Car car= new Car(name,brand);
 		list.add(car);
 		try(FileOutputStream fos = new FileOutputStream(fileName);
 			ObjectOutputStream oos = new ObjectOutputStream(fos)){

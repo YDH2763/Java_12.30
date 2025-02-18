@@ -26,7 +26,7 @@
 		객체에 있는 속성을 삭제
 		  delete 객체명.속성명;
 		*/
-		document.write("<h3>{}를 이용하여 객체 생성</h3>");
+		document.write("<h3>1. {}를 이용하여 객체 생성</h3>");
 		let person = {
 			name : "홍길동",
 			age : 21, 
@@ -65,7 +65,7 @@
 		*/
 
 		document.write('<hr>')
-		document.write("<h3>객체 생성 함수를 이용하여 객체 생성</h3>");
+		document.write("<h3>2. 객체 생성 함수를 이용하여 객체 생성</h3>");
 		function person2(name, age){
 			return {
 				name : name,
@@ -97,7 +97,7 @@
 				...
 			}
 		*/
-		document.write("<h3>생성자 함수를 이용하여 객체 생성</h3>");
+		document.write("<h3>3. 생성자 함수를 이용하여 객체 생성</h3>");
 		function Person3(name, age){
 			this.name = name;
 			this.age = age;
@@ -160,7 +160,7 @@
 				return this.name + " : " + this.age;
 			}
 		}
-		document.write("<h3>클래스를 이용하여 객체 생성</h3>");
+		document.write("<h3>4. 클래스를 이용하여 객체 생성</h3>");
 		var p5 = new Person4("홍길동", 21);
 		var p6 = new Person4("임꺽정", 30);
 		document.write(p5.toString(),"<br>");

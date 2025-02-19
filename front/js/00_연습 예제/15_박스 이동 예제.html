@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>박스 이동 예제</title>
+	<style>
+		*{padding: 0; border: 0;}
+		ul{list-style: none;}
+		a{text-decoration: none;}
+		.container{
+			height: 50px; width: 200px;
+			border: 3px solid black;
+		}
+		.box{
+			height: 100%; width: 200%;
+			border: 3px solid red; box-sizing: border-box;
+			transition: transform 0.5s; display: flex;
+		}
+		.boxhover{
+			transform: translateX(-50%);
+		}
+		/* .box:hover{
+			transform: translateX(-50%);
+		} */
+		 .inner-box{
+				width: 100%; height: 100%; text-align: center; line-height: 50px;
+				background-color: yellow;
+		 }
+		 .box :nth-child(2n){
+			background-color: gray;
+		 }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="box">
+			<div class="inner-box">1</div>
+			<div class="inner-box">2</div>
+		</div>
+	</div>
+	<button type="button" class="prev-btn"><</button>
+	<button type="button" class="next-btn">></button>
+	<script>
+		const prevBtn =document.querySelector(".prev-btn");
+		const nextBtn =document.querySelector(".next-btn");
+		const box=document.querySelector(".box");
+		
+		nextBtn.addEventListener("click",e=>{
+			box.classList.add("boxhover");
+			// box.style.transform="translateX(-50%)";
+		});
+
+		prevBtn.addEventListener("click",e=>{
+			box.classList.remove("boxhover");
+			// box.style.transform="translateX(0%)";
+		});
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DOM-classList 예제</title>
+	<style>
+		.box{height: 300px; border: 3px solid black; margin-top: 10px; }
+		.dp-n{display: none;}
+	</style>
+</head>
+<body>
+	<!-- 
+	버튼을 클릭하면 박스가 사라지고 다시 클릭하면 박스가 나타나도록 작성하세요.
+	display:none을 활용
+	-->
+	<button type="button" id="btn1">클릭</button>
+	<div class="box"></div>
+	<script>
+		const b1 = document.querySelector("#btn1");
+		
+		const box = document.querySelector(".box")
+		
+		b1.addEventListener("click",e=>{
+			box.classList.toggle("dp-n");
+		});
+	</script>
+</body>
+</html>

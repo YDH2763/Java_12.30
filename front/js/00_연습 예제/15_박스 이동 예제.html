@@ -23,13 +23,13 @@
 		/* .box:hover{
 			transform: translateX(-50%);
 		} */
-		 .inner-box{
-				width: 100%; height: 100%; text-align: center; line-height: 50px;
-				background-color: yellow;
-		 }
-		 .box :nth-child(2n){
+		.inner-box{
+			width: 100%; height: 100%; text-align: center;line-height: 50px;
+			background-color: yellow;
+		}
+		.box :nth-child(2n){
 			background-color: gray;
-		 }
+		}
 	</style>
 </head>
 <body>
@@ -47,13 +47,13 @@
 		const box=document.querySelector(".box");
 		
 		nextBtn.addEventListener("click",e=>{
-			box.classList.add("boxhover");
-			// box.style.transform="translateX(-50%)";
+			// box.classList.add("boxhover");
+			box.style.transform="translateX(-50%)";
 		});
 
 		prevBtn.addEventListener("click",e=>{
-			box.classList.remove("boxhover");
-			// box.style.transform="translateX(0%)";
+			// box.classList.remove("boxhover");
+			box.style.transform="translateX(0%)";
 		});
 	</script>
 	

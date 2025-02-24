@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>포트폴리오 문제</title>
+	<script src="../../Static/jquery.min.js"></script>
+	<style>
+		.form-group{
+			display: flex;
+		}
+		.form-group ~ .form-group{
+			margin-top: 10px;
+		}
+		.justify-content-center{
+			justify-content: center;
+		}
+		.form-group content{
+			border: 1px solid black;
+			width: 100px;
+			height: 300px;
+		}
+
+		.form-left{
+			width: 100px;
+		}
+		.form-right{
+			width: calc(100% - 100px);
+		}
+		.table{ width: 100%; border: 1px solid black;}
+		.table th, .table td{border: 1px solid black;  }
+		.table td{ background-color: rgba(255, 255, 0, 0.233);}
+		.table thead, .table tfoot{ background: orange; color: white;}
+		.table .btn{ width: 100%;}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<form action="insert.no">
+			<fieldset>
+				<legend>공지사항 작성하기</legend>
+				<div class="form-group">
+					<label for="title" class="form-left" >제목</label>
+					<input type="text" name="title" id="title" class="form-right" placeholder="제목을 입력하세요.">
+					<div class="error-title"></div>
+				</div>
+				<div class="form-group content">
+					<label for="content" class="form-left" >내용</label>
+					<input type="text" name="content" id="content" class="form-right" placeholder="내용을 입력하세요.">
+					<div class="error-content"></div>
+				</div>
+				<div class="form-group">
+					<label for="uploadFile" class="form-left">첨부 파일</label>
+					<button id = "uploadFile" name="uploadFile">파일 선택</button>
+				</div>
+
+				<div class="form-group justify-content-center">
+					<button type="submit" id="btn">작성 하기</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	
+	<hr>
+	<div class="news-container">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th colspan="2">제목</th>
+					<th>작성자</th>
+					<th>작성일</th>
+					<th>조회수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>9</td>
+					<td>공지사항 제목9</td>
+					<td>
+						<button type="button" class="btn">바로가기</button>
+					</td>
+					<td>user01</td>
+					<td>2021-03-29</td>
+					<td>34</td>
+				</tr>
+				<tr>
+					<td>6</td>
+					<td>공지사항 제목6</td>
+					<td>
+						<button type="button" class="btn">바로가기</button>
+					</td>
+					<td>answ445</td>
+					<td>2021-03-12</td>
+					<td>67</td>
+				</tr>
+				<tr>
+					<td>3</td>
+					<td>공지사항 제목3</td>
+					<td>
+						<button type="button" class="btn">바로가기</button>
+					</td>
+					<td>testg12</td>
+					<td>2021-03-01</td>
+					<td>98</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>공지사항 제목2</td>
+					<td>
+						<button type="button" class="btn">바로가기</button>
+					</td>
+					<td>palwe3</td>
+					<td>2021-01-02</td>
+					<td>85</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>공지사항 제목1</td>
+					<td>
+						<button type="button" class="btn">바로가기</button>
+					</td>
+					<td>xml23</td>
+					<td>2020-12-24</td>
+					<td>124</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th colspan="5">전체 공지사항 갯수</th>
+					<th>5개</th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<script>
+		const title = document.getElementById("title");
+		const content = document.getElementById("content");
+		const uploadFile = document.getElementById("uploadFile");
+		const btn = document.getElementById("btn");
+
+		let title1 = []
+		let content1 = []
+		
+		const errorTitle = document.getElementById("error-title");
+		const errorContent = document.getElementById("error-content");
+
+		btn.onclick=()=>{
+			
+			if(!checkRequirment(title.val()) || !checkRequirment(content.val()) ){
+				if(!checkRequirment(title.val())){
+					errorTitle.text("제목을 입력하지 않았습니다.")
+					return;
+				}
+				errorTitle.text("");
+				if(!checkRequirment(content.val())){
+					errorContent.text("내용을 입력하지 않았습니다.")
+					return;
+				}
+				error-content.text("");
+			}
+
+			title1.push(title.value);
+			content1.push(content.value);
+
+			title.value = '';
+			content.value = '';
+			title.focus();
+		};
+			
+			if(!checkRequirment(content.val())){
+				error-content.text("내용을 입력하지 않았습니다.")
+				return;
+			}
+			error-content.text("");
+
+		let selectedFile =[];
+
+		// imageInput.addEventListener('change', function() {
+ 	 	// 	selectedFile = event.target.files[0];
+		// });
+
+		uploadButton.addEventListener('click', function () {
+
+		const formData = new FormData(); 
+		formData.append('file', selectedFile); 
+
+		
+		fetch('/upload', {
+			method: 'POST',
+			body: formData,
+		})
+			.then(response => response.json())
+			.then(data => {
+
+				console.log(data);
+			})
+			.catch(error => {
+				alert("파일 불러오기를 실패하였습니다.");
+				console.error(error);
+			});
+		});
+
+		function checkRequirment(str){
+			return str && str.trim() !="";
+		}
+		
+		
+
+	</script>
+</body>
+</html>

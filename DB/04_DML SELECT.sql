@@ -181,21 +181,22 @@ JOIN
 
 # 뷰를 이용한 쿼리 재사용
 # 뷰는 미리 정의된 쿼리를 이용해서 마치 일반 테이블처리 사용하는 가상의 테이블
-# 뷰의 장점. 1. 재사용, 2. 가독성, 3. 쿼리 단순화, 4. 보환 강화 => 특정 컬럼이나 데이터만 보여줄 수 있음
+# 뷰의 장점. 1. 재사용, 2. 가독성, 3. 쿼리 단순화, 4. 보완 강화 => 특정 컬럼이나 데이터만 보여줄 수 있음
 /*
 CREATE VIEW 뷰명 AS SELECT쿼리문;
 */
 DROP VIEW STUDENT_SCORE;
-CREATE VIEW STUDENT_SCORE AS
+CREATE VIEW STUDENT_SCORE AS 
 	SELECT 
-		ST_GRADE 학년, ST_CLASS 반, ST_NUM 번호,ST_NAME 이름,
-		SJ_GRADE 학년, SJ_SEMESTER 학기, SJ_NAME 과목명, SC_SCORE 성적,
+		ST_GRADE 학년, ST_CLASS 반, ST_NUM 번호, ST_NAME 이름,
+		SJ_GRADE 과목학년, SJ_SEMESTER 학기, SJ_NAME 과목명, SC_SCORE 성적,
         ST_KEY 학생번호
-	FROM SCORE
-	JOIN 
-		STUDENT ON ST_KEY=SCORE.SC_ST_KEY
+	FROM
+		SCORE
 	JOIN
-		SUBJECT ON SC_SJ_NUM =SUBJECT.SJ_NUM;
+		STUDENT ON ST_KEY = SC_ST_KEY
+	JOIN
+		SUBJECT ON SC_SJ_NUM = SJ_NUM;
 
 # 1학년의 1학년 1학기 국어 성적을 조회하는 쿼리 
 SELECT * FROM STUDENT_SCORE WHERE 학년= 1 AND 과목학년 = 1 AND 학기 = 1 AND 과목명 = "국어";
@@ -213,17 +214,17 @@ WHERE
 GROUP BY 반;
 
 # 각 학생별 평균(학년, 학기별)을 조회를 하는 쿼리
-SELECT 학년, 반, 번호, 이름, 과목학년, 학기, AVG(성적) 평균 FROM STUDENT_SCORE
-GROUP BY 번호, 과목학년, 학기;
+SELECT 학년, 반, 번호, 이름, 과목학년, 학기, AVG(성적) 평균 FROM STUDENT_SCORE 
+GROUP BY 학생번호, 과목학년, 학기;
 
 # 각 학생의 학년별 평균을 조회하는 쿼리
-SELECT 학년, 반, 번호, 이름, 과목학년, AVG(성적) 평균 FROM STUDENT_SCORE
-GROUP BY  번호, 과목학년;
+SELECT 학년, 반, 번호, 이름, 과목학년, AVG(성적) 평균 FROM STUDENT_SCORE 
+GROUP BY 학생번호, 과목학년;
 
 # 각 학생의 1학년 평균이 가장 높은 학생을 조회하는 쿼리
-SELECT 학년, 반, 번호, 이름, 과목학년, AVG(성적) 평균 FROM STUDENT_SCORE
+SELECT 학년, 반, 번호, 이름, 과목학년, AVG(성적) 평균 FROM STUDENT_SCORE 
 WHERE 과목학년 = 1
-GROUP BY  번호, 과목학년
+GROUP BY 학생번호, 과목학년
 ORDER BY 평균 DESC
 LIMIT 1;
 
@@ -314,54 +315,87 @@ FROM SCORE;
 # 성적이 최고성적과 같으면 NULL, 다르면 성적을 출력하는 쿼리
 SELECT *, NULLIF(SC_SCORE, (SELECT MAX(SC_SCORE) FROM SCORE)) AS 결과 FROM SCORE;
 
-# 내장함수 - 문자열
-# CHAR_LENGTH(문자열) : 문자열 개수
-SELECT CHAR_LENGTH("안녕하세요.") AS CHAR_LENGTH;
+# GROUP BY 할 때 GROUP BY에 사용한 속성이 아닌 속성을 조회하는 경우 에러가 발생하는데 이를 해결하는 쿼리
+SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
+# 원상 복구하는 쿼리
+SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY';
 
-# LENGTH(문자열) : 바이트 수
-SELECT LENGTH("안녕하세요.") AS LENGTH;
+# 각 반 학생별 평균을 조회하는 쿼리
+SELECT ST_GRADE 학년, ST_CLASS 반, ST_NUM 번호, ST_NAME 이름, IFNULL(AVG(SC_SCORE),0) 평균
+FROM SCORE
+RIGHT JOIN STUDENT ON SC_ST_KEY =ST_KEY
+GROUP BY ST_KEY;
 
-# CONCAT(문자열1, ....) : 문자열을 이어 붙임
-SELECT CONCAT("안녕","하","세요.") AS CONCAT;
+# 1학년 1반의 반 등수를 조회하는 쿼리(평균).
+# 평균이 같으면 국어, 영어, 수학 점수 순으로 비교하여 등수를 결정. 다 같으면 같은 등수
+# 같은 등수가 나오는 경우, 다음 등수는 같은 등수 수만큼 건너 뜀
+SELECT RANK() OVER(ORDER BY 평균 DESC, 국어평균 DESC, 수학평균 DESC, 영어평균 DESC) 순위,T.*
+FROM 
+(SELECT
+	 ST_GRADE 학년,
+	 ST_CLASS 반,
+	 ST_NUM 번호,
+	 ST_NAME 이름,
+	 IFNULL(AVG(SC_SCORE),0) 평균,
+     AVG(CASE WHEN SJ_NAME ='국어' THEN SC_SCORE END) 국어평균,
+	 AVG(CASE WHEN SJ_NAME ='수학' THEN SC_SCORE END) 수학평균,
+	 AVG(CASE WHEN SJ_NAME ='영어' THEN SC_SCORE END) 영어평균
+	FROM
+		SCORE
+	JOIN
+		SUBJECT ON SC_SJ_NUM=SJ_NUM
+	RIGHT JOIN
+		STUDENT ON SC_ST_KEY =ST_KEY
+	WHERE
+		ST_GRADE = 1 AND ST_CLASS = 1
+	GROUP BY ST_KEY) AS T;
 
-# FIELD(찾을문자열, 문자열1, ....) : 찿을 문자열의 위치를 찾아 반환
-SELECT FIELD("안녕","안녕하시오","안녕일까?아닐까?","안녕") AS FIELD;
+# 2학년 등수를 조회하는 쿼리(평균).
+SELECT RANK() OVER(ORDER BY 평균 DESC) 순위, T.*
+FROM
+(SELECT ST_GRADE 학년, ST_CLASS 반, ST_NUM 번호, ST_NAME 이름, IFNULL(AVG(SC_SCORE),0) 평균
+FROM SCORE
 
-# INSTR(기존문자열, 부분문자열) : 기존 문자열에서 부분 문자열의 위치를 찾아 반환
-SELECT INSTR("HELLO JAVA","JAVA") AS INSTR;
+RIGHT JOIN STUDENT ON SC_ST_KEY =ST_KEY
+WHERE ST_GRADE = 2
+GROUP BY ST_KEY) AS T;
 
-# LOCATE(부분문자열, 기존문자열) : 기존 문자열에서 부분문자열의 위치를 찾아 반환
-SELECT LOCATE("JAVA","HELLO JAVA") AS LOCATE;
+# 2학년들의 1학년 성적 평균을 이용하여 반 등수를 조회하는 쿼리
+SELECT 
+	RANK() OVER(ORDER BY 반평균 DESC) 반등수, T.*
+FROM
+	(
+	SELECT 
+		학년, 반, AVG(학생평균) 반평균
+	FROM 
+		(SELECT 
+			ST_GRADE 학년,
+			ST_CLASS 반,
+			ST_KEY, 
+			IFNULL(AVG(SC_SCORE), 0) 학생평균
+		FROM 
+			SCORE 
+		RIGHT JOIN 
+			STUDENT ON ST_KEY = SC_ST_KEY
+		GROUP BY 
+			ST_KEY
+		) AS T
+	WHERE 
+		학년 = 2
+	GROUP BY
+		학년, 반) AS T;
 
-# FORMAT(숫자, 소수점자리) : 숫자를 소수점이하 자리까지 표현. 1000단위마다 ,를 추가
-SELECT FORMAT(10000,0) AS FORMET;
-
-# BIN(숫자), OCT(숫자), HEX(숫자) : 2, 8, 16진수로 변환
-SELECT BIN(255) AS BIN , OCT(255) AS OCT, HEX(255) AS HEX;
-
-# INSERT (기존문자열, 위치, 길이, 삽입할문자열): 기존 문자열의 위치부터 길이만큼 지우고 삽입할 문자열을 끼움
-SELECT INSERT ("HELLO JAVA", 7, 4, "C++") AS `INSERT`;
-
-# LEFT(문자열, 길이), RIGHT(문자열, 길이) : 왼쪽/오른쪽에서 문자열의 길이만큼 반환
-SELECT LEFT("TEST.TXT", 4) AS `LEFT`, RIGHT("TEST.TXT",3) AS `RIGHT`;
-
-# LOWER(문자열, 길이), UPPER(문자열, 길이) : 소문자로/대문자로
-SELECT LOWER("HELLO JAVA") AS `LOWER`, UPPER("TEST.TXT",3) AS `UPPER`;
-
-# LPAD(문자열, 길이, 채울문자열)/RPAD(문자열, 길이, 채울문자열) : 문자열을 길이만큼 늘리고 빈곳을 채울문자열로 채움
-SELECT LPAD(1, 3, "0") AS LPAD, RPAD(1,3,"0") AS RPAD;
-
-# REPEAT(문자열, 횟수) : 문자열을 횟수만큼 반복
-SELECT REPEAT(1, 3) AS `REPEAT`;
-
-# REPLACE(문자열, 문자열A, 문자열B) : 문자열에서 문자열A를 문자열B로 바꿈
-SELECT REPLACE("HELLO JAVA", "JAVA", "C++") AS `REPLACE`;
-
-# REVERSE(문자열) : 왼쪽/오른쪽에서 문자열 순서를 역순으로 반환
-SELECT REVERSE("ABCDEF") AS `REVERSE`;
-
-# SUBSTRING(문자열, 시작위치, 길이) : 문자열에서 시작위치부터 길이만큼 부분문자열을 반환
-SELECT SUBSTRING("HELLO JAVA", 7, 4) AS SUBSTRING;
-
-
-
+SELECT 
+	RANK() OVER(ORDER BY 반평균 DESC) 반등수, T.*
+FROM
+	(
+	SELECT 
+		ST_GRADE 학년, ST_CLASS 반, IFNULL(AVG(SC_SCORE), 0) 반평균
+	FROM 
+		SCORE 
+	RIGHT JOIN
+		STUDENT ON SC_ST_KEY = ST_KEY
+	WHERE 
+		ST_GRADE = 3
+	GROUP BY
+		ST_GRADE, ST_CLASS) AS T;

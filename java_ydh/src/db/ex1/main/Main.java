@@ -29,7 +29,7 @@ public class Main {
 //			System.out.println(std);
 		}
 		//1학년 1반 1번 학생을 가져와서 확인하는 코드
-		StudentVO std1 =studentService.getStudent(1,1,1);
+		//StudentVO std1 =studentService.getStudent(1,1,1);
 		//System.out.println(std);
 		
 		//1학년 1반 1번 학생을 가져와서 확인하는 코드
@@ -46,7 +46,7 @@ public class Main {
 		
 		/* 1학년 1반 1번 학생의 등록된 성적들을 가져오는 코드*/
 		// 1학년 1반 1번 학생의 정보를 가져옴
-		StudentVO std3 =studentService.getStudent(1,1,1);
+		//StudentVO std3 =studentService.getStudent(1,1,1);
 		//학생의 기본키를 이용하여 성적들을 가져옴
 		List<ScoreVO> scores = null;
 		scores =scoreService.getScoreList(std3.getSt_key());

@@ -50,13 +50,14 @@ public class StudentServiceImp implements StudentService {
 
 	@Override
 	public boolean addStudent(StudentVO std) {
-		StudentVO dbstd = studentDao.selectStudent2(std);
-		//학년 반 번호가 일치하는 학생이 존재하면
-		if(dbstd !=null) {
+		StudentVO dbStd = studentDao.selectStudent2(std);
+		//학년 반 번호가 일치하는 학생이 존재하면 
+		if(dbStd != null) {
 			return false;
 		}
 		return studentDao.insertStudent(std);
 	}
+
 
 	@Override
 	public boolean updateStudentName(StudentVO std) {

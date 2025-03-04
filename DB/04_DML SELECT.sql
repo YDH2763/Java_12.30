@@ -46,7 +46,7 @@ SELECT * FROM STUDENT WHERE ST_NUM IN(1,2,3) AND ST_CLASS = 1 AND ST_GRADE = 1;
 # 성이 이씨인 학생들을 조회하는 쿼리
 SELECT * FROM STUDENT WHERE ST_NAME LIKE "이%";
 SELECT * FROM STUDENT WHERE ST_NAME LIKE CONCAT("이","%");
-# 이름이 호가 들어가는 학생들을 조회하는 쿼리
+# 이름이 태가 들어가는 학생들을 조회하는 쿼리
 SELECT * FROM STUDENT WHERE ST_NAME LIKE "%태";
 # 성이 이씨이고 이름이 3글자인 학생들을 조회하는 쿼리
 SELECT * FROM STUDENT WHERE ST_NAME LIKE "이__";

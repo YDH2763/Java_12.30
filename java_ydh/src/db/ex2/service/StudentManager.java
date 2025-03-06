@@ -1,6 +1,5 @@
 package db.ex2.service;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -36,8 +35,8 @@ public class StudentManager {
 			SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 			session = sessionFactory.openSession(true);
 			studentDao = session.getMapper(StudentDAO.class);
-			subjectDao = session.getMapper(SubjectDAO.class);
 			scoreDao = session.getMapper(ScoreDAO.class);
+			subjectDao = session.getMapper(SubjectDAO.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,10 +87,10 @@ public class StudentManager {
 	}
 
 	public boolean deleteStudent(Student std) {
-		if(std == null || list == null) {
+		if(std == null) {
 			return false;
 		}
-		return list.remove(std);
+		return studentDao.deleteStudent(std);
 	}
 
 	public void printStudent(Student std) {
@@ -106,18 +105,18 @@ public class StudentManager {
 		}
 		tmp.print();
 	}
-	
+
 	public int getScoreNum(Student std, SubjectScore subjectScore) {
-		if(std == null || subjectScore == null || subjectScore.getSubject() ==null) {
+		if(std == null || subjectScore == null || subjectScore.getSubject() == null) {
 			return -1;
 		}
 		//등록된 학생인지 확인
 		Student dbStd = studentDao.selectStudent(std);
-		if(dbStd ==null) {
+		if(dbStd == null) {
 			return -1;
 		}
-		// 등록된 과목인지 확인
-		Subject dbSubject =subjectDao.selectSubject(subjectScore.getSubject());
+		//등록된 과목인지 확인 
+		Subject dbSubject = subjectDao.selectSubject(subjectScore.getSubject());
 		if(dbSubject == null) {
 			return -1;
 		}
@@ -127,12 +126,12 @@ public class StudentManager {
 		
 		return dbSubScore != null ? dbSubScore.getNum() : -1;
 	}
-
+	
 	public boolean insertScore(Student std, SubjectScore subjectScore) {
-		if( std == null || subjectScore == null) {
+		if(std == null || subjectScore == null) {
 			return false;
 		}
-		// 새로 등록할 학생의 성적이 이미 등록되어 있는지를 확인
+		//새로 등록할 학생의 성적이 이미 등록되어 있는지를 확인 
 		if(getScoreNum(std, subjectScore) != -1) {
 			return false;
 		}
@@ -140,27 +139,25 @@ public class StudentManager {
 	}
 
 	public boolean updateScore(Student std, Subject subject, SubjectScore subjectScore) {
-		if( std == null || subject == null || subjectScore == null ||
-			subjectScore.getSubject() == null) {
+		if(	std == null || subject == null || 
+			subjectScore == null || subjectScore.getSubject() == null) {
 			return false;
 		}
-		std = getStudent(std);
-		if(std == null) {
-			return false;
-		}
-		//std와 subject를 이용하여 기존 성적 정보를 가져옴\
-		SubjectScore tmp =new SubjectScore(subject, 0);
-		int scNum = getScoreNum(std,tmp); 
+		//std와 subject를 이용하여 기존 성적 정보를 가져옴 
+		SubjectScore tmp = new SubjectScore(subject, 0);
+		int scNum = getScoreNum(std, tmp);
+		//등록된 성적이 아니면
 		if(scNum == -1) {
 			return false;
 		}
 		Subject dbSubject = subjectDao.selectSubject(subjectScore.getSubject());
+		//수정할 성적의 과목 정보가 없으면 
 		if(dbSubject == null) {
 			return false;
 		}
 		//현재 성적의 기본키를 가져옴
 		subjectScore.setNum(scNum);
-		//새 성적의 과목의 기본키를 가져옴
+		//새 성적의 과복의 기본키를 가져옴 
 		subjectScore.getSubject().setNum(dbSubject.getNum());
 		return scoreDao.updateScore(subjectScore);
 	}
@@ -170,7 +167,7 @@ public class StudentManager {
 			return false;
 		}
 		Student dbStd = studentDao.selectStudent(std);
-		if(dbStd ==null) {
+		if(dbStd == null) {
 			return false;
 		}
 		Subject dbSubject = subjectDao.selectSubject(subject);
@@ -190,23 +187,20 @@ public class StudentManager {
 			System.out.println("일치하는 학생이 없습니다.");
 			return;
 		}
-		subject =subjectDao.selectSubject(subject);
+		subject = subjectDao.selectSubject(subject);
 		if(subject == null) {
 			System.out.println("일치하는 과목 정보가 없습니다.");
 			return;
 		}
-		SubjectScore tmp = new SubjectScore(new Subject(0, 0, ""), 0);
+		SubjectScore tmp = new SubjectScore(new Subject(0, 0, ""),0);
 		tmp.setKey(std.getKey());
 		tmp.getSubject().setNum(subject.getNum());
 		
-		SubjectScore score =scoreDao.selectScore(tmp);
-		if(score ==null) {
+		SubjectScore score = scoreDao.selectScore(tmp);
+		if(score == null ) {
 			System.out.println("등록된 성적이 없습니다.");
+			return;
 		}
-		System.out.println(""+ std + score);
+		System.out.println(std + " " + score);
 	}
 }
-
-
-
-

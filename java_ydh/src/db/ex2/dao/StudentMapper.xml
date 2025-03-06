@@ -12,24 +12,23 @@
 		<result property="name" column="st_name"/>
 		
 		<collection property="list" select="selectScoreList" column="st_key"
-			ofType="db.ex2.model.vo.subjectScore" />
-		
+			ofType="db.ex2.model.vo.SubjectScore" />
 	</resultMap>
 	
-	<resultMap type ="db.ex2.model.vo.SubjectScore" id="ScoreMap">
-  		<id property = "num" column="sc_num"/>
-  		<result property="score" column="sc_score"/>
-  		<result property="key" column="sc_st_key"/>
-  		
-  		<association property="subject" javaType="db.ex2.model.vo.Subject">
-	  		<id property = "num" column="sj_num"/>
-	  		<result property="grade" column="sj_grade"/>
-	  		<result property="semester" column="sj_semester"/>
-	  		<result property="name" column="sj_name"/>
-  		</association>
-  	</resultMap>
-  	
-  	<select id="selectScoreList" resultMap="ScoreMap">
+	<resultMap type="db.ex2.model.vo.SubjectScore" id="ScoreMap">
+		<id property="num" column="sc_num"/>
+		<result property="score" column="sc_score"/>
+		<result property="key" column="sc_st_key"/>
+		
+		<association property="subject" javaType="db.ex2.model.vo.Subject">
+			<id property="num" column="sj_num"/>
+			<result property="grade" column="sj_grade"/>
+			<result property="semester" column="sj_semester"/>
+			<result property="name" column="sj_name"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectScoreList" resultMap="ScoreMap">
 		select * from score
 		join subject on sc_sj_num = sj_num
 		where
@@ -57,4 +56,9 @@
 			st_grade = #{old.grade} and st_class = #{old.classNum} and	
 			st_num = #{old.num}
 	</update>
+	<delete id="deleteStudent">
+		delete from student
+		where st_grade = #{std.grade} and st_class = #{std.classNum} 
+			and st_num = #{std.num} 
+	</delete>
 </mapper>

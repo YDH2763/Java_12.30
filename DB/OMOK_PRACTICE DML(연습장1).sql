@@ -68,17 +68,5 @@ FROM SCORE ;
 
 
 
-0	112	18:10:49	SELECT 
-  S_COUNT "전체 게임 횟수",
-     S_WIN"전체 승리",
-     S_LOSE "전체 패배",
-     S_DRAW "전체 무승부",
-     (SUM(S_WIN)/SUM(S_COUNT))*100 "전체 승률(%)",
-     S_U_ID 유저
- FROM SCORE WHERE S_U_ID="dbehdgns12345"
- LIMIT 0, 1000	Error Code: 1140. In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'omok.SCORE.S_COUNT'; this is incompatible with sql_mode=only_full_group_by	0.000 sec
-
-
-
 
 

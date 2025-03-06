@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import db.ex2.dao.StudentDAO;
 import db.ex2.dao.SubjectDAO;
 import db.ex2.model.vo.Subject;
 import lombok.Data;
@@ -40,29 +41,18 @@ public class SubjectManager {
 		return dbSub != null;
 	}
 	
-	public SubjectManager(List<Subject> list) {
-		if(list == null) {
-			this.list = new ArrayList<Subject>();
-		}
-		else {
-			this.list = list;
-		}
-	}
-	
-
 	public boolean insertSubject(Subject subject) {
 		if(subject == null) {
 			return false;
 		}
-		if(list.contains(subject)) {
+		if(contains(subject)) {
 			return false;
 		}
 		return subjectDao.insertSubject(subject);
 	}
 
-
 	public boolean updateSubject(Subject subject, Subject newSubject) {
-		if( subject == null || newSubject == null) {
+		if(subject == null || newSubject == null) {
 			return false;
 		}
 		//등록 안된 과목을 수정하려고 함
@@ -71,7 +61,7 @@ public class SubjectManager {
 		}
 		//수정할 과목이 등록되지 않으면 수정
 		if(!contains(newSubject)) {
-			return subjectDao.updateSubject(subject,newSubject);
+			return subjectDao.updateSubject(subject, newSubject);
 		}
 		return false;
 	}
@@ -84,7 +74,7 @@ public class SubjectManager {
 	}
 
 	public void print() {
-		List<Subject>list = subjectDao.selectSubjectList();
+		List<Subject> list = subjectDao.selectSubjectList();
 		
 		if(list == null || list.size() == 0) {
 			System.out.println("등록된 과목이 없습니다.");

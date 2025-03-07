@@ -53,16 +53,36 @@ SELECT (SUM(S_WIN)/SUM(S_COUNT))*100 "흑팀 승률(%)", S_U_ID 유저 FROM SCOR
 # 유저 'dbehdgns12345'의 백팀 승률 ()
 SELECT (SUM(S_WIN)/SUM(S_COUNT))*100 "백팀 승률(%)", S_U_ID 유저 FROM SCORE WHERE S_U_ID ="dbehdgns12345" AND S_POSITION = "WHITE";
 
+SELECT (SUM(S_WIN)/SUM(S_COUNT))*100 "전체 승률(%)", S_U_NAME 유저  FROM SCORE WHERE S_U_NAME ="전순형";
+SELECT SUM(S_COUNT) 게임횟수 FROM SCORE WHERE S_U_NAME ="전순형";
+
 SELECT 
     (SUM(S_WIN)/SUM(S_COUNT))*100 "전체 승률(%)",
-    S_U_ID 유저
-FROM SCORE WHERE S_U_ID="dbehdgns12345" ;
+    S_U_NAME 유저
+FROM SCORE WHERE S_U_NAME="전순형" ;
+
+SELECT 
+    (SUM(S_WIN)/SUM(S_COUNT)) 전체승리,
+    S_U_NAME 유저
+FROM SCORE WHERE S_U_NAME = "전순형"  ;
 
 SELECT 
 	S_POSITION "진영",
     ((S_WIN)/(S_COUNT))*100 "진영 승률(%)",
-    S_U_ID 유저
+     S_U_NAME 유저
 FROM SCORE ;
+
+SELECT 
+	S_POSITION "진영",
+    ((S_WIN)/(S_COUNT))*100 "진영 승률(%)",
+     S_U_NAME 유저
+FROM SCORE WHERE S_POSITION="BLACK";
+
+SELECT 
+	S_POSITION "진영",
+    ((S_WIN)/(S_COUNT))*100 "진영 승률(%)",
+     S_U_NAME 유저
+FROM SCORE WHERE S_POSITION="WHITE";
 
 
 

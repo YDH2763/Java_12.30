@@ -12,8 +12,6 @@ import kr.kh.spring.model.dto.PersonDTO;
 
 /* @Controller
  * => HandlerMapping에 url을 등록하기 위한 어노테이션
- * 
- * 
  * */
 
 

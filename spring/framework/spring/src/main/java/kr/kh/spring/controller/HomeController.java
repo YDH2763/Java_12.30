@@ -3,6 +3,7 @@ package kr.kh.spring.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -70,7 +71,6 @@ public class HomeController {
 		return "sample/send";
 	}
 	
-	
 	//@GetMapping과 @PostMapping에서 처리하는 내용이 같은 경우 @REquestMapping으로 묶을 수 있다.
 	/*
 	 * @GetMapping("/send")
@@ -80,13 +80,42 @@ public class HomeController {
 			model.addAttribute("person", person);
 			return "sample/send";
 		}
+	 *@PostMapping("/send")
+	  public String sendPost(Model model, PersonDTO person) {
+		  System.out.println("화면에서 보낸 이름과 나이 :  " + person);
+		  //서버에서 화면으로 객체를 전송
+		  model.addAttribute("person", person);
+		  return "sample/send";
+	  }
 	 * */
 	
-	@PostMapping("/send")
-	public String sendPost(Model model, PersonDTO person) {
-		System.out.println("화면에서 보낸 이름과 나이 :  " + person);
-		//서버에서 화면으로 객체를 전송
-		model.addAttribute("person", person);
+	
+	@GetMapping("/{name}/{age}")
+	public String nameAge(@PathVariable("name")String name1,
+						  @PathVariable("age")int age1) {
+		System.out.println("화면에서 전송한 이름 : " + name1);
+		System.out.println("화면에서 전송한 이름 : " + age1);
 		return "sample/send";
 	}
+	@GetMapping("/redirect")
+	public String redirect(PersonDTO person) {
+		System.out.println(person);
+		/* redirect 방식
+		 * - URL 변경
+		 * - 해당 URL를 처리하는 메소드를 호출
+		 * - 기존 request 정보는 전송하지 않음.
+		 * */
+		return "redirect:/send";
+	}
+	@GetMapping("/forward")
+	public String forward(PersonDTO person) {
+		System.out.println(person);
+		/* forward 방식
+		 * - URL 변경되지 않음
+		 * - 해당 URL를 처리하는 메소드를 호출 
+		 * - 기존 request 정보도 같이 전송 => 매개변수로 받은 데이터들도 함께 전송
+		 * */
+		return "forward:/send";
+	}
+	
 }

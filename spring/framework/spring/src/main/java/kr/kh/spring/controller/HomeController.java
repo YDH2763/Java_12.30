@@ -1,15 +1,13 @@
 package kr.kh.spring.controller;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import kr.kh.spring.model.dto.PersonDTO;
+
 
 /* @Controller
  * => HandlerMapping에 url을 등록하기 위한 어노테이션
@@ -38,8 +36,10 @@ public class HomeController {
 //	
 //	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@GetMapping(value="/")
-	public String home( Model model) {
+	public String home( Model model, String name, Integer age) {
 		
+		System.out.println("화면에서 보낸 이름 : "+name);
+		System.out.println("화면에서 보낸 이름 : "+age);
 		/* 화면에 데이터를 전송하는 방법
 		 * - Model 객체를 이용하여 전송
 		 * - addAttribute("화면에서 쓸 이름", 데이터)
@@ -57,4 +57,36 @@ public class HomeController {
 		return "home";
 	}
 	
+	/* 메소드의 매개변수에 객체를 넣어주면, 맵핑이 되든 안되든 기본 생성자를 이용해서 객체를 만듬
+	 * => 화면에서 보낸 변수의 이름과 같은 필드가 있으면 자동으로 맵핑이 되어 값이 변경됨.
+	 * 	  이때 setter를 호출
+	 * */
+	
+	@RequestMapping("/send")
+	public String send(Model model, PersonDTO person) {
+		System.out.println("화면에서 보낸 이름과 나이 :  " + person);
+		//서버에서 화면으로 객체를 전송
+		model.addAttribute("person", person);
+		return "sample/send";
+	}
+	
+	
+	//@GetMapping과 @PostMapping에서 처리하는 내용이 같은 경우 @REquestMapping으로 묶을 수 있다.
+	/*
+	 * @GetMapping("/send")
+		public String send(Model model, PersonDTO person) {
+			System.out.println("화면에서 보낸 이름과 나이 :  " + person);
+			//서버에서 화면으로 객체를 전송
+			model.addAttribute("person", person);
+			return "sample/send";
+		}
+	 * */
+	
+	@PostMapping("/send")
+	public String sendPost(Model model, PersonDTO person) {
+		System.out.println("화면에서 보낸 이름과 나이 :  " + person);
+		//서버에서 화면으로 객체를 전송
+		model.addAttribute("person", person);
+		return "sample/send";
+	}
 }

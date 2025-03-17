@@ -303,18 +303,89 @@ INSERT INTO LECTURE_SCHEDULE(LC_DAY, LC_TIME, LC_MINUTE, LC_LE_NUM) VALUES
 
 # 이병건(2025160002) 학생이 컴퓨터개론(1), 프로그래밍 언어(2), 확률과 통계(5), 음악과 감상(8)을 수강 신청 했을 때 쿼리
 SELECT * FROM COURSE;
-INSERT INTO COURSE( CO_TOTAL, CO_ST_NUM,CO_LE_NUM)
+INSERT INTO COURSE(CO_ST_NUM,CO_LE_NUM)
 VALUES
-	(0,"2025160002",1),(0,"2025160002",2),(0,"2025160002",5),(0,"2025160002",8);
+	("2025160002",1),("2025160002",2),("2025160002",5),("2025160002",8);
 
 
 SELECT * FROM LECTURE JOIN SUBJECT ON LE_SJ_NUM= SJ_NUM;
 
+# 교수님이 성적 비율을 다음과 같이 수정했을 때 필요한 쿼리
+# 모든 강의의 성적 비율을 기본으로 적용하는 쿼리 
+INSERT INTO LECTURE_STANDARD(LS_LE_NUM) 
+SELECT LE_NUM FROM LECTURE;
 
+# 컴퓨터개론(1)의 성적 비율 - 중간 : 45, 기말 : 45, 출석 : 10, 과제 : 0
+# 프로그래밍언어(2)의 성적 비율 - 중간 : 40, 기말 : 40, 출석 : 10, 과제 : 10
+UPDATE LECTURE_STANDARD 
+SET
+	LS_MID = 45,
+    LS_FINAL = 45,
+    LS_ATT = 10,
+    LS_HOME = 0
+WHERE
+	LS_LE_NUM = 1;
+UPDATE LECTURE_STANDARD 
+SET
+	LS_MID = 40,
+    LS_FINAL = 40,
+    LS_ATT = 10,
+    LS_HOME = 10
+WHERE
+	LS_LE_NUM = 2;    
 
+# 이병건(2025160002) 학생의 컴퓨터개론(1) 성적이 중간 100, 기말 80, 과제 0, 출석 100일때 성적을 계산하는 프로시저를
+# 작성해서 실행하세요. A+ : 95이상, A : 90이상 
 
+DROP PROCEDURE IF EXISTS INSERT_SCORE;
 
+DELIMITER //
+CREATE PROCEDURE INSERT_SCORE(
+	IN _ST_NUM CHAR(10),
+    IN _LE_NUM INT,
+    IN _MID INT,
+    IN _FINAL INT,
+    IN _ATT INT,
+    IN _HOME INT
+)
+BEGIN
+	DECLARE _TOTAL INT;
+    DECLARE _RES VARCHAR(4);
+    SET _TOTAL = (
+		SELECT 
+			(_MID  * LS_MID + 
+			_FINAL * LS_FINAL + 
+            _ATT   * LS_ATT + 
+            _HOME  * LS_HOME) / 100 
+            FROM LECTURE_STANDARD WHERE LS_LE_NUM = _LE_NUM);
+	IF _TOTAL >= 95 THEN SET _RES = "A+";
+    ELSEIF _TOTAL >= 90 THEN SET _RES = "A";
+    ELSEIF _TOTAL >= 85 THEN SET _RES = "B+";
+    ELSEIF _TOTAL >= 80 THEN SET _RES = "B";
+    ELSEIF _TOTAL >= 75 THEN SET _RES = "C+";
+    ELSEIF _TOTAL >= 70 THEN SET _RES = "C";
+    ELSEIF _TOTAL >= 65 THEN SET _RES = "D+";
+    ELSEIF _TOTAL >= 60 THEN SET _RES = "D";
+    ELSE SET _RES = "F";
+    END IF;
+    UPDATE COURSE 
+    SET
+		CO_MID = _MID,
+        CO_FINAL = _FINAL,
+        CO_ATT = _ATT,
+        CO_HOME = _HOME,
+        CO_TOTAL = _RES
+	WHERE
+		CO_ST_NUM = _ST_NUM AND CO_LE_NUM = _LE_NUM;
+END //
+DELIMITER ;
+CALL INSERT_SCORE("2025160002", 1, 100, 80, 100,  0);
+SELECT * FROM COURSE;
 
+# 이병건(2025160002) 학생의 컴퓨터개론(2) 성적이 중간 90, 기말 90, 과제 50, 출석 100일때 성적을 계산하는 프로시저를
+# 작성해서 실행하세요. A+ : 95이상, A : 90이상 
+
+CALL INSERT_SCORE("2025160002", 2, 90, 90, 100,  50);
 
 
 

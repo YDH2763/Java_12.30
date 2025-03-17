@@ -5,10 +5,7 @@ import java.util.List;
 import db.ex1.model.vo.SubjectVO;
 
 public interface SubjectService {
-	
+
 	List<SubjectVO> getSubjectList();
-	
-	SubjectVO getSubject(int grade, int semester);
-	
 
 }

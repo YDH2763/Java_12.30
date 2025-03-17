@@ -10,8 +10,8 @@ public interface StudentDAO {
 
 	List<StudentVO> selectStudentList();
 
-	StudentVO selectStudent(int grade, int classNum, int num);
-	
+	StudentVO selectStudent(@Param("grade")int grade, @Param("classNum")int classNum, @Param("num")int num);
+
 	StudentVO selectStudent2(@Param("std")StudentVO studentVO);
 
 	boolean insertStudent(@Param("std")StudentVO std);

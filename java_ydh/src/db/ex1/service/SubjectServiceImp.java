@@ -9,13 +9,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import db.ex1.dao.StudentDAO;
 import db.ex1.dao.SubjectDAO;
 import db.ex1.model.vo.SubjectVO;
 
 public class SubjectServiceImp implements SubjectService {
 	
-	SubjectDAO subjectDao;
-	
+	private SubjectDAO subjectDao;
+
 	public SubjectServiceImp() {
 		String resource = "db/ex1/config/mybatis-config.xml";
 		InputStream inputStream;
@@ -29,16 +30,9 @@ public class SubjectServiceImp implements SubjectService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public List<SubjectVO> getSubjectList() {
 		return subjectDao.selectSubjectList();
 	}
-
-	@Override
-	public SubjectVO getSubject(int grade, int semester) {
-		return subjectDao.selectSubject(grade, semester);
-	}
-
-	
 }

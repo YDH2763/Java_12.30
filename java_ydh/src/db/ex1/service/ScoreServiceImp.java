@@ -10,11 +10,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import db.ex1.dao.ScoreDAO;
+import db.ex1.dao.SubjectDAO;
 import db.ex1.model.vo.ScoreVO;
-import db.ex1.model.vo.StudentVO;
+import db.ex1.model.vo.SubjectVO;
 
 public class ScoreServiceImp implements ScoreService {
-
+	
 	private ScoreDAO scoreDao;
 
 	public ScoreServiceImp() {
@@ -30,16 +31,14 @@ public class ScoreServiceImp implements ScoreService {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public List<ScoreVO> getScoreList() {
-		
 		return scoreDao.selectScoreList();
 	}
+
 	@Override
 	public List<ScoreVO> getScoreList(int st_key) {
 		return scoreDao.selectScoreListBySt_key(st_key);
 	}
-	
-	
-
 }

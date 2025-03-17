@@ -9,9 +9,7 @@ import db.ex1.model.vo.ScoreVO;
 public interface ScoreDAO {
 
 	List<ScoreVO> selectScoreList();
-	
+
 	List<ScoreVO> selectScoreListBySt_key(@Param("st_key")int st_key);
-	
-	
 
 }

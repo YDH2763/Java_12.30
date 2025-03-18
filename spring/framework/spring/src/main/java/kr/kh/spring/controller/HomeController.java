@@ -1,11 +1,17 @@
 package kr.kh.spring.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.kh.spring.model.dto.PersonDTO;
 
@@ -36,6 +42,8 @@ public class HomeController {
 //	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@GetMapping(value="/")
 	public String home( Model model, String name, Integer age) {
+
+
 		
 		System.out.println("화면에서 보낸 이름 : "+name);
 		System.out.println("화면에서 보낸 이름 : "+age);
@@ -66,7 +74,7 @@ public class HomeController {
 		System.out.println("화면에서 보낸 이름과 나이 :  " + person);
 		//서버에서 화면으로 객체를 전송
 		model.addAttribute("person", person);
-		return "sample/send";
+		return "/sample/send";
 	}
 	
 	//@GetMapping과 @PostMapping에서 처리하는 내용이 같은 경우 @REquestMapping으로 묶을 수 있다.
@@ -93,8 +101,9 @@ public class HomeController {
 						  @PathVariable("age")int age1) {
 		System.out.println("화면에서 전송한 이름 : " + name1);
 		System.out.println("화면에서 전송한 이름 : " + age1);
-		return "sample/send";
+		return "/sample/send";
 	}
+	
 	@GetMapping("/redirect")
 	public String redirect(PersonDTO person) {
 		System.out.println(person);
@@ -114,6 +123,23 @@ public class HomeController {
 		 * - 기존 request 정보도 같이 전송 => 매개변수로 받은 데이터들도 함께 전송
 		 * */
 		return "forward:/send";
+	}
+	
+	@RequestMapping(value= {"/main/home","/home.do"})
+	public ModelAndView openTilesView(ModelAndView mv) throws Exception{
+	    mv.setViewName("/main/home");
+	    mv.addObject("setHeader", "타일즈");
+	    return mv;
+	}
+	
+	@GetMapping("/jstl")
+	public String jstl(Model model) {
+		List<String>list = Arrays.asList("사과","바나나","딸기","포도");
+		model.addAttribute("str", "<h1>서버에서 보낸 데이터 입니다.</h1>");
+		model.addAttribute("age", 30);
+		model.addAttribute("list", list);
+		model.addAttribute("date", new Date());
+		return "/sample/jstl";
 	}
 	
 }

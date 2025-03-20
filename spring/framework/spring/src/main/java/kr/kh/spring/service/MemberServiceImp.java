@@ -8,7 +8,7 @@ import kr.kh.spring.dao.MemberDAO;
 import kr.kh.spring.model.vo.MemberVO;
 
 @Service
-public class MemberServiceImp implements MemberService {
+public class MemberServiceImp implements MemberService{
 
 	@Autowired
 	private MemberDAO memberDao;
@@ -18,7 +18,7 @@ public class MemberServiceImp implements MemberService {
 	
 	@Override
 	public boolean signup(MemberVO member) {
-		if(member ==null) {
+		if(member == null) {
 			return false;
 		}
 		//아이디 정규 표현식 체크
@@ -32,6 +32,7 @@ public class MemberServiceImp implements MemberService {
 		if(user != null) {
 			return false;
 		}
+		
 		//암호화
 		String encodedPw = passwordEncoder.encode(member.getMe_pw());
 		member.setMe_pw(encodedPw);
@@ -43,16 +44,17 @@ public class MemberServiceImp implements MemberService {
 		if(member == null) {
 			return null;
 		}
-		MemberVO user =memberDao.selectMember(member.getMe_id());
-		// 아이디가 일치하지 않을 때
+		MemberVO user = memberDao.selectMember(member.getMe_id());
+		//아이디가 일치하지 않을 때 
 		if(user == null) {
 			return null;
 		}
-		// 비번이 일치하지 않을 때
+		//비번이 일치하지 않을 때
 		if(!passwordEncoder.matches(member.getMe_pw(), user.getMe_pw())) {
 			return null;
 		}
-		//아이디 비번이 일치할 때
+		
+		//아이디 비번이 다 일치할 때
 		return user;
 	}
 

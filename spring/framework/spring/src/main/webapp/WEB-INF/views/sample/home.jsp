@@ -38,7 +38,7 @@
 </form>
 
 <h1>url 경로에 데이터 보내기</h1>
-<a href="/spring/abc/10">url 경로에 데이터 보내기</a>
+<a href="<c:url value="/sample/이병건/10"/>">url 경로에 데이터 보내기</a>
 <h1>redirect 예제</h1>
 <a href="<c:url value="/redirect?name=이병건&age=44"/>">리다이렉트 예제</a>
 <h1>forward 예제</h1>

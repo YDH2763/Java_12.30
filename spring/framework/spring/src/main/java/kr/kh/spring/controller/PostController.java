@@ -73,6 +73,7 @@ public class PostController {
 		List<FileVO> list = postService.getFileList(po_num);
 		//화면에 전송
 		model.addAttribute("post", post);
+		model.addAttribute("list", list);
 		return "/post/detail";
 	}
 	@GetMapping("/post/delete/{po_num}")

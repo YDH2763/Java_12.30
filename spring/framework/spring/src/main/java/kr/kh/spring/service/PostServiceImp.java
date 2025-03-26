@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import Pagination.Criteria;
+import Pagination.PageMaker;
 import kr.kh.spring.dao.PostDAO;
 import kr.kh.spring.model.vo.BoardVO;
 import kr.kh.spring.model.vo.FileVO;
@@ -25,8 +27,8 @@ public class PostServiceImp implements PostService {
 	private String uploadPath;
 
 	@Override
-	public List<PostVO> getPostList(int po_bo_num) {
-		return postDao.selectPostList(po_bo_num);
+	public List<PostVO> getPostList(Criteria cri) {
+		return postDao.selectPostList(cri);
 	}
 
 	@Override
@@ -200,6 +202,12 @@ public class PostServiceImp implements PostService {
 	@Override
 	public List<FileVO> getFileList(int po_num) {
 		return postDao.selectFileList(po_num);
+	}
+
+	@Override
+	public PageMaker getPageMaker(Criteria cri) {
+		int totalCount =postDao.selectCountPostList(cri);
+		return new PageMaker(3,cri,totalCount);
 	}
 
 		

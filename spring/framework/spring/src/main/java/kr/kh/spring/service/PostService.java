@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import Pagination.Criteria;
+import Pagination.PageMaker;
+import Pagination.PostCriteria;
 import kr.kh.spring.model.vo.BoardVO;
 import kr.kh.spring.model.vo.FileVO;
 import kr.kh.spring.model.vo.MemberVO;
@@ -11,8 +14,8 @@ import kr.kh.spring.model.vo.PostVO;
 
 public interface PostService {
 
-	List<PostVO> getPostList(int po_bo_num);
-
+	List<PostVO> getPostList(Criteria cri);
+	
 	List<BoardVO> getBoardList();
 
 	boolean insertBoard(String bo_name);
@@ -32,6 +35,10 @@ public interface PostService {
 	void updateView(int po_num);
 
 	List<FileVO> getFileList(int po_num);
+
+	PageMaker getPageMaker(Criteria cri);
+
+	
 
 	
 

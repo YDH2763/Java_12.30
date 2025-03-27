@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.kh.spring.model.dto.PersonDTO;
 import kr.kh.spring.model.vo.MemberVO;
@@ -137,9 +139,11 @@ public class HomeController {
 	}
 	
 	@PostMapping("/signup")
-	public String signupPost(MemberVO member) {
+	public String signupPost(Model model, MemberVO member) {
 		if(memberService.signup(member)) {
-			return "redirect:/";
+			model.addAttribute("msg", "회원 가입을 했습니다.");
+			model.addAttribute("url", "/");
+			return "msg/msg";
 		}
 		return "redirect:/signup";
 	}
@@ -166,5 +170,13 @@ public class HomeController {
 		HttpSession session = request.getSession();
 		session.removeAttribute("user");
 		return "redirect:/";
+	}
+	
+	@ResponseBody
+	@PostMapping("/check/id")//또는 @PostMapping("경로")
+	//리턴타입 꼭 Object일 필요는 없음. List로 보내고 싶으면 List로 수정해도 상관없음 
+	public boolean checkId(@RequestParam("id") String id){
+		
+		return memberService.checkId(id);
 	}
 }

@@ -1,5 +1,6 @@
 package kr.kh.spring.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import Pagination.Criteria;
-import Pagination.PageMaker;
 import kr.kh.spring.dao.PostDAO;
 import kr.kh.spring.model.vo.BoardVO;
 import kr.kh.spring.model.vo.FileVO;
 import kr.kh.spring.model.vo.MemberVO;
 import kr.kh.spring.model.vo.PostVO;
+import kr.kh.spring.pagination.Criteria;
+import kr.kh.spring.pagination.PageMaker;
 import kr.kh.spring.utils.UploadFileUtils;
 
 @Service
@@ -80,7 +81,7 @@ public class PostServiceImp implements PostService {
 			return false;
 		}
 		
-		if(fileList == null || fileList.length==0) {
+		if(fileList == null || fileList.length == 0) {
 			return true;
 		}
 		
@@ -89,22 +90,22 @@ public class PostServiceImp implements PostService {
 		}
 		return true;
 	}
-	
+
 	private void uploadFile(MultipartFile file, int po_num) {
-		String fi_ori_name=file.getOriginalFilename();
+		String fi_ori_name = file.getOriginalFilename();
 		//파일명이 없으면
-		if(fi_ori_name == null || fi_ori_name.length()==0) {
+		if(fi_ori_name == null || fi_ori_name.length() == 0) {
 			return;
 		}
 		try {
-			String fi_name = UploadFileUtils.uploadFile(uploadPath, fi_ori_name, file.getBytes()); 
-			FileVO fileVo =new FileVO(fi_ori_name, fi_name,po_num);
+			String fi_name = UploadFileUtils.uploadFile(uploadPath, fi_ori_name, file.getBytes());
+			FileVO fileVo = new FileVO(fi_ori_name, fi_name, po_num);
 			postDao.insertFile(fileVo);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public PostVO getPost(int po_num) {
 		return postDao.selectPost(po_num);
@@ -128,27 +129,28 @@ public class PostServiceImp implements PostService {
 			return false;
 		}
 		//첨부파일 삭제
-		List<FileVO> fileList =postDao.selectFileList(po_num);
-		if(fileList == null || fileList.size()==0) {
+		List<FileVO> fileList = postDao.selectFileList(po_num);
+		
+		if(fileList == null || fileList.size() == 0) {
 			return true;
 		}
-		//실제 첨부파일을 삭제
+		
 		for(FileVO fileVo : fileList) {
 			deleteFile(fileVo);
 		}
-		//db에서 해당 첨부파일을 삭제		
-		return res;
+		//db에서 해당 첨부파일을 삭제
+		return true;
 	}
 
 	private void deleteFile(FileVO fileVo) {
 		if(fileVo == null) {
 			return;
 		}
-		//실제 첨부파일 삭제
+		//실제 첨부파일을 삭제
 		UploadFileUtils.deleteFile(uploadPath, fileVo.getFi_name());
+		
 		//db에서 해당 첨부파일을 삭제
 		postDao.deleteFile(fileVo.getFi_num());
-		
 	}
 
 	@Override
@@ -174,24 +176,24 @@ public class PostServiceImp implements PostService {
 			return false;
 		}
 		
-		if(fileList == null || fileList.length==0) {
+		if(fileList == null || fileList.length == 0) {
 			return true;
 		}
-		
+		//새 첨부파일 추가
 		for(MultipartFile file : fileList) {
 			uploadFile(file, post.getPo_num());
 		}
 		
-		if(delNums == null || delNums.length==0) {
+		if(delNums == null || delNums.length == 0) {
 			return true;
 		}
-		//x버튼 눌러서 제가한 첨부파일 제거
+		//x버튼 눌러서 제거한 첨부파일 제거
 		for(int fi_num : delNums) {
 			FileVO fileVo = postDao.selectFile(fi_num);
 			deleteFile(fileVo);
 		}
 		
-		return res;
+		return true;
 	}
 
 	@Override
@@ -206,8 +208,8 @@ public class PostServiceImp implements PostService {
 
 	@Override
 	public PageMaker getPageMaker(Criteria cri) {
-		int totalCount =postDao.selectCountPostList(cri);
-		return new PageMaker(3,cri,totalCount);
+		int totalCount = postDao.selectCountPostList(cri);
+		return new PageMaker(3, cri, totalCount);
 	}
 
 		

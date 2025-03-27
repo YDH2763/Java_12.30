@@ -8,9 +8,9 @@
 </head>
 <body>
 	<div class="mt-5 mb-5">
-		<a class="btn btn<c:if test="${pm.po_bo_num ne 0 }">-outline</c:if>-success" href="<c:url value="/post/list?po_bo_num=0"/>">전체</a>
+		<a class="btn btn<c:if test="${pm.cri.po_bo_num ne 0 }">-outline</c:if>-success" href="<c:url value="/post/list?po_bo_num=0"/>">전체</a>
 		<c:forEach items="${boardList}" var="board">
-			<a class="btn btn<c:if test="${pm.po_bo_num ne board.bo_num }">-outline</c:if>-success" href="<c:url value="/post/list?po_bo_num=${board.bo_num}"/>">${board.bo_name }</a>
+			<a class="btn btn<c:if test="${pm.cri.po_bo_num ne board.bo_num }">-outline</c:if>-success" href="<c:url value="/post/list?po_bo_num=${board.bo_num}"/>">${board.bo_name }</a>
 		</c:forEach>
 	</div>
 
@@ -51,19 +51,19 @@
 			</c:if>
 		</tbody>
 	</table>
-	<form action="<c:url value="/post/list"/>">
-	<input type="hidden" name="po_bo_num" value="${pm.cri.po_bo_num}">
-		 <div class="input-group mb-3">
-		 	<select class="form-control" name="type">
-		 		<option value="0" <c:if test="${pm.cri.type=='0'}">selected</c:if>>전체</option>
-		 		<option value="1" <c:if test="${pm.cri.type=='1'}">selected</c:if>>제목+내용</option>
-		 		<option value="2" <c:if test="${pm.cri.type=='2'}">selected</c:if>>작성자</option>
-		 	</select>
-		    <input type="text" class="form-control" placeholder="검색어를 입력하세요." name="search" value="${pm.cri.search}">
-		    <button type="submit" class="form-control btn btn-outline-success">검색</button>
-		 </div>
-	</form>
 	
+	<form action="<c:url value="/post/list"/>">
+		<input type="hidden" name="po_bo_num" value="${pm.cri.po_bo_num}">
+		<div class="input-group mb-3">
+			<select class="form-control" name="type">
+				<option value="0" <c:if test="${pm.cri.type == '0' }">selected</c:if>>전체</option>
+				<option value="1" <c:if test="${pm.cri.type == '1' }">selected</c:if>>제목+내용</option>
+				<option value="2" <c:if test="${pm.cri.type == '2' }">selected</c:if>>작성자</option>
+			</select>
+		    <input type="text" class="form-control" placeholder="검색어를 입력하세요." name="search" value="${pm.cri.search }">
+		    <button type="submit" class="form-control btn btn-outline-success">검색</button>
+		</div>
+	</form>
 	<ul class="pagination justify-content-center">
 		<c:if test="${pm.prev}">
 			<c:url var="url" value="/post/list">
@@ -100,7 +100,6 @@
 			</li>
 		</c:if>
 	</ul>
-	
 	<a href="<c:url value="/post/insert"/>" class="btn btn-outline-success btn-insert">게시글 등록</a>
 	<script type="text/javascript">
 		$(".btn-insert").click(function(e){

@@ -1,4 +1,4 @@
-package Pagination;
+package kr.kh.spring.pagination;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,5 @@
 package kr.kh.spring.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -13,13 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-import Pagination.Criteria;
-import Pagination.PageMaker;
-import Pagination.PostCriteria;
 import kr.kh.spring.model.vo.BoardVO;
 import kr.kh.spring.model.vo.FileVO;
 import kr.kh.spring.model.vo.MemberVO;
 import kr.kh.spring.model.vo.PostVO;
+import kr.kh.spring.pagination.PageMaker;
+import kr.kh.spring.pagination.PostCriteria;
 import kr.kh.spring.service.PostService;
 
 @Controller
@@ -36,7 +34,9 @@ public class PostController {
 		
 		List<BoardVO> boardList = postService.getBoardList();
 		
+		
 		PageMaker pm = postService.getPageMaker(cri);
+
 		//화면에 게시글 목록을 전송
 		//매퍼의 resultType=kr.kh.spring.model.vo.postVO
 		model.addAttribute("boardList", boardList);
@@ -71,8 +71,9 @@ public class PostController {
 		postService.updateView(po_num);
 		//게시글을 가져옴
 		PostVO post = postService.getPost(po_num);
-		//첨부파일 가져옴
+		//첨부파일을 가져옴
 		List<FileVO> list = postService.getFileList(po_num);
+		
 		//화면에 전송
 		model.addAttribute("post", post);
 		model.addAttribute("list", list);
@@ -98,7 +99,7 @@ public class PostController {
 		PostVO post = postService.getPost(po_num);
 		//작성자인지 아닌지 확인하는 작업 
 		MemberVO user = (MemberVO) session.getAttribute("user");
-		
+
 		//로그인 안되어 있거나, 없는 게시글이거나 작성자가 아니면
 		if(user == null || post == null || !post.getPo_me_id().equals(user.getMe_id())) {
 			model.addAttribute("url", "/post/list");
@@ -108,7 +109,7 @@ public class PostController {
 		
 		
 		List<BoardVO> list = postService.getBoardList();
-
+		
 		List<FileVO> fileList = postService.getFileList(po_num);
 		
 		//화면에 전송

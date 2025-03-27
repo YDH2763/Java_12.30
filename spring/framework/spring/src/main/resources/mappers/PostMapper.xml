@@ -14,17 +14,17 @@
 			and po_bo_num = #{cri.po_bo_num}
 		</if>
 		<choose>
-			<when test="cri.type == '0'">
+			<when test="cri.type == 0">
 				and (po_title like concat('%', #{cri.search}, '%') 
-				or po_content like concat('%', #{cri.search}, '%')
-				or po_me_id= #{cri.search})
+				or po_content like concat('%', #{cri.search}, '%') 
+				or po_me_id = #{cri.search})
 			</when>
-			<when test="cri.type == '1'">
+			<when test="cri.type == 1">
 				and (po_title like concat('%', #{cri.search}, '%') 
 				or po_content like concat('%', #{cri.search}, '%'))
 			</when>
-			<when test="cri.type == '2'">
-				and po_me_id= #{cri.search})
+			<when test="cri.type == 2">
+				and po_me_id = #{cri.search}
 			</when>
 		</choose>
 		order by po_num desc
@@ -75,20 +75,18 @@
 		where
 			po_num = #{po_num}
 	</update>
-	
 	<insert id="insertFile">
 		insert into file(fi_ori_name, fi_name, fi_po_num)
 		values(#{file.fi_ori_name},#{file.fi_name},#{file.fi_po_num})
 	</insert>
-	
 	<select id="selectFileList" resultType="FileVO">
 		select * from file where fi_po_num = #{po_num}
 	</select>
 	<delete id="deleteFile">
-		delete from file where fi_num =#{fi_num}
+		delete from file where fi_num = #{fi_num}
 	</delete>
 	<select id="selectFile" resultType="FileVO">
-		select * from file where fi_num=#{fi_num}
+		select * from file where fi_num = #{fi_num}	
 	</select>
 	<select id="selectCountPostList" resultType="int">
 		select 
@@ -99,19 +97,18 @@
 			and po_bo_num = #{cri.po_bo_num}
 		</if>
 		<choose>
-			<when test="cri.type == '0'">
+			<when test="cri.type == 0">
 				and (po_title like concat('%', #{cri.search}, '%') 
-				or po_content like concat('%', #{cri.search}, '%')
-				or po_me_id= #{cri.search})
+				or po_content like concat('%', #{cri.search}, '%') 
+				or po_me_id = #{cri.search})
 			</when>
-			<when test="cri.type == '1'">
+			<when test="cri.type == 1">
 				and (po_title like concat('%', #{cri.search}, '%') 
 				or po_content like concat('%', #{cri.search}, '%'))
 			</when>
-			<when test="cri.type == '2'">
-				and po_me_id= #{cri.search})
+			<when test="cri.type == 2">
+				and po_me_id = #{cri.search}
 			</when>
 		</choose>
 	</select>
-	
 </mapper>

@@ -34,10 +34,9 @@ public class CommentController {
 	@PostMapping("/list")
 	public Map<String, Object> list(@RequestBody Criteria cri) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		List<CommentVO> list = commentService.getCommentList(cri);
+		List<CommentVO> list= commentService.getCommentList(cri);
 		
-		System.out.println(cri);
+		map.put("list", list);
 		return map;
 	}
-	
 }

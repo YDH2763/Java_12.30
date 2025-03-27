@@ -11,7 +11,7 @@
 	  		#{comment.co_content},
 	  		#{comment.co_me_id},
 	  		<choose>
-	  			<when test="comment.co_or_num = 0">
+	  			<when test="comment.co_or_num == 0">
 	  				ifnull(max(co_num),0)+1,
 	  			</when>
 	  		</choose>

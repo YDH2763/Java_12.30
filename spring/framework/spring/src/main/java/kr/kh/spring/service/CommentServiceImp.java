@@ -9,6 +9,7 @@ import kr.kh.spring.dao.CommentDAO;
 import kr.kh.spring.model.vo.CommentVO;
 import kr.kh.spring.model.vo.MemberVO;
 import kr.kh.spring.pagination.Criteria;
+import kr.kh.spring.pagination.PageMaker;
 
 @Service
 public class CommentServiceImp implements CommentService {
@@ -21,7 +22,7 @@ public class CommentServiceImp implements CommentService {
 		if(comment == null) {
 			return false;
 		}
-		if(user==null) {
+		if(user == null) {
 			return false;
 		}
 		try {
@@ -39,5 +40,13 @@ public class CommentServiceImp implements CommentService {
 			return null;
 		}
 		return commentDao.selectCommentList(cri);
+	}
+
+	@Override
+	public PageMaker getPageMaker(Criteria cri) {
+		if(cri == null) {
+			return null;
+		}
+		return new PageMaker(3, cri, 0);
 	}
 }

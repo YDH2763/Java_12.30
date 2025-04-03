@@ -8,10 +8,13 @@ import lombok.NoArgsConstructor;
 public class PostCriteria extends Criteria {
 
 	private int po_bo_num;
+	
+	
 
 	public PostCriteria(int page, int perPageNum) {
 		super(page, perPageNum);
 	}
-	
+
+
 	
 }

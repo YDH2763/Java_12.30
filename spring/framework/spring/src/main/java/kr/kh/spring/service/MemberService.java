@@ -10,4 +10,12 @@ public interface MemberService {
 
 	boolean checkId(String id);
 
+	void updateCookie(MemberVO user);
+
+	MemberVO getMemberByCookie(String cookieId);
+
+	boolean findPw(String id);
+
+	boolean updateMember(MemberVO user, MemberVO member);
+
 }

@@ -47,13 +47,23 @@
 	<beans:bean id="adminInterceptor" class="kr.kh.spring.interceptor.AdminInterceptor"/>
 	<beans:bean id="guestInterceptor" class="kr.kh.spring.interceptor.GuestInterceptor"/>
 	<beans:bean id="memberInterceptor" class="kr.kh.spring.interceptor.MemberInterceptor"/>
-
+	<beans:bean id="autoLoginInterceptor" class="kr.kh.spring.interceptor.AutoLoginInterceptor"/>
+	<beans:bean id="prevUrlInterceptor" class="kr.kh.spring.interceptor.PrevUrlInterceptor"/>
+	
 	<!-- 인터셉터 맵핑 -->
 	<interceptors>
 		<interceptor>
+			<mapping path="/login"/>
+			<beans:ref bean="prevUrlInterceptor"/>
+		</interceptor>
+		<interceptor>
+			<mapping path="/**"/>
+			<beans:ref bean="autoLoginInterceptor"/>
+		</interceptor>
+		<interceptor>
 			<mapping path="/post/insert"/>
-			<mapping path="/post/delete"/>
-			<mapping path="/post/update"/>
+			<mapping path="/post/delete/*"/>
+			<mapping path="/post/update/*"/>
 			<beans:ref bean="memberInterceptor"/>
 		</interceptor>
 		<interceptor>
@@ -72,16 +82,14 @@
 		</interceptor>
 	</interceptors>
 	
-	<!-- 업로드 파일 용량 설정 -->
+	<!-- 업로드 파일 용량 설정-->
 	<beans:bean id="multipartResolver" 
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 업로드 최대 크기 10Mb -->
 		<beans:property name="maxUploadSize" value="10485760"/>
 	</beans:bean>
-	
 	<!-- 업로드할 파일 경로 -->
 	<beans:bean id="uploadPath" class="java.lang.String">
-		<beans:constructor-arg value="D:\\uploads"/>
+		<beans:constructor-arg value="${file.location}"/>
 	</beans:bean>
-	
 </beans:beans>

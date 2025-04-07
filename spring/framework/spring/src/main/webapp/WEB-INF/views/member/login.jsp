@@ -5,7 +5,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
 </head>
 <body>
 	<form action="<c:url value="/login"/>" method="post">
@@ -15,10 +14,16 @@
 			<input type="text" class="form-control" id="id" name="me_id">
 		</div>
 		<div class="form-group mt-3">
-			<label for="pw" class="form-label">비밀번호</label>
+			<label for="pw" class="form-label">비번</label>
 			<input type="password" class="form-control" id="pw" name="me_pw">
+		</div>
+		<div class="form-check">
+			<label class="form-check-label">
+				<input type="checkbox" class="form-check-input" value="true" name="auto">자동로그인
+			</label>
 		</div>
 		<button type="submit" class="btn btn-outline-success mt-3 col-12">로그인</button>
 	</form>
+	<a href="<c:url value="/find/pw"/>">비밀번호 찾기</a>
 </body>
 </html>

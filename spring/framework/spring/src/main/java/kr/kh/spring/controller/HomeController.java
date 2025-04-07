@@ -149,34 +149,73 @@ public class HomeController {
 	}
 	
 	@GetMapping("/login")
-	public String login() {
+	public String login(HttpServletRequest request) {
+		//이전 URL을 가져옴
+		String prevUrl = request.getHeader("Referer");
+		//이전 URL이 있고, /login이 아니면 세션에 저장
+		if(prevUrl != null && !prevUrl.contains("/login")) {
+			request.getSession().setAttribute("prevUrl", prevUrl);
+			System.out.println(prevUrl);
+		}
 		return "/member/login";
 	}
 	@PostMapping("/login")
 	public String loginPost(Model model, MemberVO member) {
 		//화면에서 보낸 회원 정보와 일치하는 회원 정보를 DB에서 가져옴
 		MemberVO user = memberService.login(member);
-		//가져온 회원 정보를 인터셉터에게 전달
-		model.addAttribute("user", user);
 		if(user == null) {
 			return "redirect:/login";			
 		}
-		return "redirect:/";
+		user.setAuto(member.isAuto());
+		//가져온 회원 정보를 인터셉터에게 전달
+		model.addAttribute("user", user);
+		return "msg/msg";
 	}
 	@GetMapping("/logout")
 	public String logout(HttpServletRequest request) {
 		
 		//세션에 있는 user를 삭제
 		HttpSession session = request.getSession();
+		MemberVO user = (MemberVO)session.getAttribute("user");
 		session.removeAttribute("user");
+		if(user != null) {
+			user.setMe_cookie(null);
+			memberService.updateCookie(user);
+		}
 		return "redirect:/";
+	}
+	@ResponseBody
+	@PostMapping("/check/id")
+	public boolean checkId(@RequestParam("id") String id){
+		return memberService.checkId(id);
+	}
+	
+	@GetMapping("/find/id")
+	public String findPw(){
+		return "/member/pw";
 	}
 	
 	@ResponseBody
-	@PostMapping("/check/id")//또는 @PostMapping("경로")
-	//리턴타입 꼭 Object일 필요는 없음. List로 보내고 싶으면 List로 수정해도 상관없음 
-	public boolean checkId(@RequestParam("id") String id){
+	@PostMapping("/find/id")
+	public boolean findPwPost(@RequestParam String id){
 		
-		return memberService.checkId(id);
+		return memberService.findPw(id);
+	}
+	
+	@GetMapping("/mypage")
+	public String mypagePw(){
+		return "/member/mypage";
+	}
+	
+	@PostMapping("/mypage")
+	public String mypagePost(Model model, MemberVO member, HttpSession session){
+		MemberVO user=(MemberVO) session.getAttribute("user");
+		if(memberService.updateMember(user,member)) {
+			model.addAttribute("msg", "회원 정보를 변경했습니다.");
+		}
+		else {
+			model.addAttribute("msg", "회원 정보를 변경하지 못했습니다.");
+		}
+		return "/msg/msg";
 	}
 }

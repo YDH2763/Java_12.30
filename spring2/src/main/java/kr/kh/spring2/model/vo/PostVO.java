@@ -2,6 +2,9 @@ package kr.kh.spring2.model.vo;
 
 import java.util.Date;
 
+import lombok.Data;
+
+@Data
 public class PostVO {
 
 	int po_num;
@@ -14,4 +17,5 @@ public class PostVO {
 	String po_del;
 	boolean auto;	
 	String po_fi_name;
+	
 }

@@ -20,5 +20,15 @@ public interface PostDAO {
 	boolean insertPost(PostVO post);
 
 	void insertComment(CommentVO comment);
+
+	void insertFile(FileVO fileVO);
+
+	boolean deletePost(int po_num);
+
+	void deleteFile(int fi_num);
+
+	void updatePost(PostVO dbPost);
+
+	FileVO selectFile(int fi_num);
 	
 }

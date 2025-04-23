@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.servlet.http.HttpSession;
 import kr.kh.boot.model.vo.BoardVO;
 import kr.kh.boot.model.vo.CustomUser;
 import kr.kh.boot.model.vo.FileVO;
@@ -18,6 +17,8 @@ import kr.kh.boot.model.vo.MemberVO;
 import kr.kh.boot.model.vo.PostVO;
 import kr.kh.boot.service.PostService;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -40,38 +41,74 @@ public class PostController {
 		model.addAttribute("boardList", boardList);
 		return "post/list";
 	}
-
+	
 	@GetMapping("/post/detail/{po_num}")
-	public String detail(Model model, @PathVariable int po_num, HttpSession session) {
-		 PostVO post = postService.getPost(po_num);
-		 List<FileVO> list = postService.getFileList(po_num);
-		 model.addAttribute("post", post);
-		 model.addAttribute("list", list);
-		 
+	public String getMethodName(Model model, @PathVariable int po_num) {
+		PostVO post = postService.getPost(po_num);
+		List<FileVO> list = postService.getFileList(po_num);
+		model.addAttribute("post", post);
+		model.addAttribute("list", list);
 		return "post/detail";
 	}
-
+	
 	@GetMapping("/post/insert")
 	public String postInsert(Model model) {
-		List<BoardVO> boardList = postService.getBoardList();
-		
-		model.addAttribute("boardList", boardList);
-		return "/post/insert";
+		List<BoardVO> list = postService.getBoardList();
+		model.addAttribute("list", list);
+		return "post/insert";
 	}
-
 	@PostMapping("/post/insert")
-	public String postInsertPost(PostVO post, @AuthenticationPrincipal CustomUser customUser) {
-		System.out.println(post);
+	public String postInsertPost(PostVO post, @AuthenticationPrincipal CustomUser customUser, 
+		MultipartFile[] fileList) {
+		
 		//로그인한 회원 정보를 가져옴
-		if(customUser !=null){
+		if(customUser != null){
 			MemberVO user = customUser.getMember();
 			post.setPo_me_id(user.getMe_id());
 		}
-		if(postService.insertPost(post)){
-			return "redirect:/post/list" + post.getPo_bo_num();
+		if(postService.insertPost(post, fileList)){
+			return "redirect:/post/list/" + post.getPo_bo_num();
 		}
-		
 		return "redirect:/post/insert";
+	}
+
+	@PostMapping("/post/delete/{num}")
+	public String postDelete(@PathVariable int num, @AuthenticationPrincipal CustomUser customUser) {
+		if(customUser == null){
+			return "redirect:/post/detail/"+num;
+		}
+		MemberVO user = customUser.getMember();
+		if(postService.deletePost(num, user)){
+			return "redirect:/post/list/0";
+		}
+		return "redirect:/post/detail/"+num;
+	}
+
+	@GetMapping("/post/update/{po_num}")
+	public String postUpdate(Model model, @PathVariable int po_num, @AuthenticationPrincipal CustomUser customUser) {
+		PostVO post = postService.getPost(po_num);
+		
+		//로그인 안한 사용자이거나 없는 게시글인 경우
+		if(customUser == null || post == null){
+			return "redirect:/post/detail/"+po_num;
+		}
+		//작성자가 아닌 경우
+		MemberVO user = customUser.getMember();
+		if(user.getMe_id().equals(post.getPo_me_id())){
+			return "redirect:/post/detail/"+po_num;
+		}
+		List<FileVO> list =postService.getFileList(po_num);
+		model.addAttribute("post", post);
+		model.addAttribute("list", list);
+		return "post/update";
+	}
+
+	@PostMapping("/post/update/{po_num}")
+	public String postUpdatePost(PostVO post, @PathVariable int po_num, @AuthenticationPrincipal CustomUser customUser
+		, int[] dels, MultipartFile[] fileList) {
+		post.setPo_num(po_num);
+		postService.updatePost(post, customUser, dels, fileList);
+		return "redirect:/post/detail/"+po_num;
 	}
 	
 	

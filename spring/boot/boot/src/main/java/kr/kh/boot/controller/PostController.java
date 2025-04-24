@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import kr.kh.boot.model.vo.BoardVO;
 import kr.kh.boot.model.vo.CustomUser;
 import kr.kh.boot.model.vo.FileVO;
+import kr.kh.boot.model.vo.LikeVO;
 import kr.kh.boot.model.vo.MemberVO;
 import kr.kh.boot.model.vo.PostVO;
 import kr.kh.boot.service.PostService;
@@ -22,6 +23,7 @@ import kr.kh.boot.utils.PageMaker;
 import kr.kh.boot.utils.PostCriteria;
 
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -53,6 +55,7 @@ public class PostController {
 	
 	@GetMapping("/post/detail/{po_num}")
 	public String getMethodName(Model model, @PathVariable int po_num) {
+		postService.updateView(po_num);
 		PostVO post = postService.getPost(po_num);
 		List<FileVO> list = postService.getFileList(po_num);
 		model.addAttribute("post", post);
@@ -121,6 +124,20 @@ public class PostController {
 		post.setPo_num(po_num);
 		postService.updatePost(post, customUser, dels, fileList);
 		return "redirect:/post/detail/"+po_num;
+	}
+
+	@ResponseBody
+	@PostMapping("/post/like")
+	public int postLike(@RequestBody LikeVO likeVO, @AuthenticationPrincipal CustomUser customUser) {
+		
+		return postService.like(likeVO, customUser);
+	}
+	
+	@GetMapping("/post/like")
+	public String postLike(Model model,@RequestParam int po_num, @AuthenticationPrincipal CustomUser customUser) {
+		LikeVO like=postService.getLike(po_num, customUser);
+		model.addAttribute("like", like);
+		return "post/like";
 	}
 	
 }

@@ -29,7 +29,7 @@ public class MyBatisConfig {
             new PathMatchingResourcePatternResolver().getResources("classpath:mappers/*.xml")
         );
          // TypeAlias 적용
-        sessionFactory.setTypeAliasesPackage("패키지명.model.vo");  // 여기에 패키지 경로 지정
+        sessionFactory.setTypeAliasesPackage("kr.kh.shoppingmall.model.vo");  // 여기에 패키지 경로 지정
         return sessionFactory.getObject();
     }
 }

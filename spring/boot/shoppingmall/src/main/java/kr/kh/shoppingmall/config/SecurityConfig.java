@@ -1,5 +1,6 @@
 package kr.kh.shoppingmall.config;
 
+import kr.kh.shoppingmall.model.vo.UserRole;
 import kr.kh.shoppingmall.service.MemberDetailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,12 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		http.authorizeHttpRequests(
 			requests->
-				requests
-					.anyRequest()
-					.permitAll()
+			requests
+				.requestMatchers("/admin/**")
+				.hasAnyAuthority(UserRole.ADMIN.name()) //권한이 ADMIN인 회원
+				//.hasAnyRole(UserRole.ADMIN.name()) //권한이 ROLE_ADMIN인 회원
+				.anyRequest()
+				.permitAll()
 		)
 		.formLogin((form)->
 			form

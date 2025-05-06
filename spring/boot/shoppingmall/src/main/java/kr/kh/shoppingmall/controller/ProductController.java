@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import kr.kh.shoppingmall.model.vo.BuyVO;
+import kr.kh.shoppingmall.model.vo.CartVO;
 import kr.kh.shoppingmall.model.vo.ProductVO;
 import kr.kh.shoppingmall.service.ProductService;
 import kr.kh.shoppingmall.utils.CustomUser;
@@ -55,20 +56,42 @@ public class ProductController {
 		ProductVO product = productService.getProduct(code, false);
 		return product.getPr_amount();
 	}
-	
+
 	@PostMapping("/buy")
 	public String buy(Model model, BuyVO buy, @AuthenticationPrincipal CustomUser customUser, HttpServletRequest request) {
 		String prevUrl = request.getHeader("Referer");
-		if(productService.buy(buy,customUser)){
-			return "redirect:/product/buy/complete"+buy.getBu_num();
+		if(productService.buy(buy, customUser)){
+			return "redirect:/product/buy/complete/"+buy.getBu_num();
 		}
 		//실패하면 이전 URL로
-		return "redirect:" + prevUrl;
+		return "redirect:"+prevUrl;
+	}
+	@GetMapping("/buy/complete/{bu_num}")
+	public String buyComplete(@PathVariable int bu_num) {
+		return "product/complete";
+	}
+	@PostMapping("/final/complete")
+	@ResponseBody
+	public boolean productFinalComplete(@RequestParam int num, @AuthenticationPrincipal CustomUser customUser) {
+		return productService.updateBuy(num, customUser);
 	}
 	
-	@GetMapping("/buy/complete/{bu_num}")
-	public String buyComplate(@PathVariable int bu_num) {
-		return "product/complete";
+	@PostMapping("/cart/insert")
+	@ResponseBody
+	public boolean cartInsert(@RequestBody CartVO cart, @AuthenticationPrincipal CustomUser customUser) {
+		return productService.insertCart(cart, customUser);
+	}
+	@GetMapping("/cart")
+	public String cart(Model model, @AuthenticationPrincipal CustomUser customUser) {
+		List<CartVO> cartList = productService.getCartList(customUser);
+		System.out.println(cartList);
+		model.addAttribute("cartList", cartList);
+		return "product/cart";
+	}
+	@PostMapping("/cart/update")
+	@ResponseBody
+	public String cartUPdate(@RequestBody CartVO cart, @AuthenticationPrincipal CustomUser customUser) {
+		return productService.updateCart(cart, customUser);
 	}
 	
 	

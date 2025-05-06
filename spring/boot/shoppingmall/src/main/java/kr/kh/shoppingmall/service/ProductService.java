@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import kr.kh.shoppingmall.dao.ProductDAO;
 import kr.kh.shoppingmall.model.vo.BuyListVO;
 import kr.kh.shoppingmall.model.vo.BuyVO;
+import kr.kh.shoppingmall.model.vo.CartVO;
 import kr.kh.shoppingmall.model.vo.CategoryVO;
 import kr.kh.shoppingmall.model.vo.ProductVO;
 import kr.kh.shoppingmall.utils.CustomUser;
@@ -130,8 +131,7 @@ public class ProductService {
 		if(product == null){
 			return false;
 		}
-		
-		//썸네일 작업		
+		//썸네일 작업
 		try {
 			String fileName = thumb.getOriginalFilename();
 			if(thumb != null && fileName.length() != 0){
@@ -140,24 +140,23 @@ public class ProductService {
 				String thumbnail;
 				thumbnail = UploadFileUtils.uploadFile(uploadPath, newFileName, thumb.getBytes(),"product");
 				product.setPr_thumb(thumbnail);
-			}	
+			}
 			return productDAO.updateProduct(product);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		
 	}
 
 	public boolean updateAmount(ProductVO product) {
 		if(product == null){
 			return false;
 		}
-		ProductVO dbProduct =productDAO.selectProduct(product.getPr_code());
+		ProductVO dbProduct = productDAO.selectProduct(product.getPr_code());
 		if(dbProduct == null){
 			return false;
 		}
-		if(product.getPr_amount()<0){
+		if(product.getPr_amount() < 0 ){
 			return false;
 		}
 		dbProduct.setPr_amount(dbProduct.getPr_amount()+product.getPr_amount());
@@ -165,21 +164,25 @@ public class ProductService {
 	}
 
 	public boolean buy(BuyVO buy, CustomUser customUser) {
-		if(customUser ==null || buy == null){
+		if(customUser == null || buy == null){
 			return false;
 		}
 		int totalPrice = calclateTotalPrice(buy.getList());
-		buy.setBu_total(totalPrice);
+		buy.setBu_total_price(totalPrice);
 		buy.setBu_me_id(customUser.getUsername());
-		boolean res=productDAO.insertBuy(buy);
+		boolean res = productDAO.insertBuy(buy);
 		if(!res){
 			return false;
 		}
-		setBu_num(buy.getBu_num(),buy.getList());
+		setBu_num(buy.getBu_num(), buy.getList());
 		productDAO.insertBuyList(buy.getList());
-		for(BuyListVO bl :buy.getList()){
+		for(BuyListVO bl : buy.getList()){
+			//수량 업데이트
 			productDAO.updateProductAmount(bl);
+			//장바구니에 있는 제품들은 제거 
+			productDAO.deleteCart(bl.getBl_pr_code(), buy.getBu_me_id());
 		}
+
 		return true;
 	}
 
@@ -187,7 +190,7 @@ public class ProductService {
 		if(list == null || list.size() == 0){
 			return;
 		}
-		for(BuyListVO bl :list){
+		for(BuyListVO bl : list){
 			bl.setBl_bu_num(bu_num);
 		}
 	}
@@ -196,15 +199,74 @@ public class ProductService {
 		if(list == null || list.size() == 0){
 			return 0;
 		}
-		int total=0;
-		for(BuyListVO bl:list){
-			ProductVO product =productDAO.selectProduct(bl.getBl_pr_code());
-			if(product==null){
+		int total = 0;
+		for(BuyListVO bl : list){
+			//제품 정보 가져옴
+			ProductVO product = productDAO.selectProduct(bl.getBl_pr_code());
+			if(product == null){
 				continue;
 			}
+			//제품 구매 가격 = 제품 가격 * 구매 수량
 			bl.setBl_price(product.getPr_price() * bl.getBl_amount());
+			//총 가격 = 총가격 + 제품 구매 가격
 			total += bl.getBl_price();
 		}
 		return total;
+	}
+
+	public List<BuyVO> getBuyList(CustomUser customUser) {
+		if(customUser == null){
+			return null;
+		}
+		String id = customUser.getUsername();
+		return productDAO.selectBuyList(id);
+	}
+
+	public boolean updateBuy(int num, CustomUser customUser) {
+		if(customUser == null){
+			return false;
+		}
+		return productDAO.updateBuy(num, customUser.getUsername());
+	}
+
+	public boolean insertCart(CartVO cart, CustomUser customUser) {
+		if(customUser == null || cart == null){
+			return false;
+		}
+		cart.setCt_me_id(customUser.getUsername());
+
+		CartVO dbCart = productDAO.selectCart(cart);
+		if(dbCart == null){
+			return productDAO.insertCart(cart);
+		}
+		dbCart.setCt_amount(cart.getCt_amount());
+		return productDAO.updateCart(dbCart);
+	}
+
+	public List<CartVO> getCartList(CustomUser customUser) {
+		if(customUser == null){
+			return null;
+		}
+		return productDAO.selectCartList(customUser.getUsername());
+	}
+
+	public String updateCart(CartVO cart, CustomUser customUser) {
+		if(cart == null || customUser == null){
+			return "장바구니 변경에 실패했습니다.";
+		}
+		String id = customUser.getUsername();
+		cart.setCt_me_id(id);
+		CartVO dbCart = productDAO.selectCart(cart);
+		//수량 체크를 위해
+		ProductVO product = productDAO.selectProduct(cart.getCt_pr_code());
+		//제고량이 적은 경우
+		if(product.getPr_amount() < cart.getCt_amount()){
+			return "" + product.getPr_amount();
+		}
+		dbCart.setCt_amount(cart.getCt_amount());
+		if(productDAO.updateCart(dbCart)){
+			return ""+dbCart.getCt_amount();
+		}
+		return "제고량 수정에 실패했습니다.";
 	}
 }

@@ -17,8 +17,14 @@
 				
 				<!-- Links -->
 				<ul class="navbar-nav" th:if="${list != null}">
-					<li class="nav-item" th:each="category : ${list}">
-						<a class="nav-link" th:href="@{/product/list/{num}(num=${category.ca_num})}" th:text="${category.ca_name}">Link 1</a>
+					<li class="nav-item" th:classappend="${0 == ca_num ? 'active' : ''}">
+						<a class="nav-link" 
+							th:href="@{/product/list/0}">전체</a>
+					</li>
+					<li class="nav-item" th:each="category : ${list}" th:classappend="${category.ca_num == ca_num ? 'active' : ''}">
+						<a class="nav-link" 
+							th:href="@{/product/list/{num}(num=${category.ca_num})}" 
+							th:text="${category.ca_name}">Link 1</a>
 					</li>
 				</ul>
 			</div>
@@ -35,6 +41,9 @@
 					<th:block sec:authorize="isAuthenticated()">
 						<li class="nav-item" sec:authorize="hasAuthority('USER')">
 							<a class="nav-link" th:href="@{/mypage}" th:text="${#authentication.principal.user.me_id}+'님 페이지'">마이 페이지</a>
+						</li>
+						<li class="nav-item" sec:authorize="hasAuthority('USER')">
+							<a class="nav-link" th:href="@{/product/cart}">장바구니</a>
 						</li>
 						<li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
 							<a class="nav-link" th:href="@{/admin/page}">관리자 페이지</a>
